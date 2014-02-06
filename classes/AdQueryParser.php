@@ -25,10 +25,24 @@ class ERWP_AdQueryParser {
     private $objects = null;
 
     /**
+     * @var bool
+     */
+    private $debug = false;
+
+
+    /**
+     * @param bool $debug Whether or not to be verbose in case of an error occurring
+     */
+    public function __construct($debug = WP_DEBUG)
+    {
+        $this->debug = $debug;
+    }
+
+    /**
      * @example
-     *   $this->translate('%post.post_name%');
-     *   $this->translate('%site.name%');
-     *   $this->translate('%category.slug%');
+     *   $this->translate('post.post_name');
+     *   $this->translate('site.name');
+     *   $this->translate('category.slug');
      *
      * @param string $param
      * @return string
@@ -36,7 +50,7 @@ class ERWP_AdQueryParser {
     protected function translate($param)
     {
         $chunks = explode('.', $param);
-        $translation = '';
+        $translation = null;
 
         if( count($chunks) == 2 ) {
 
@@ -46,13 +60,15 @@ class ERWP_AdQueryParser {
             } elseif( $chunks[0] == 'site' ) {
                 // We want blog info
                 $translation = get_bloginfo($chunks[1]);
-            } elseif( WP_DEBUG ) {
-                // Tell the dev that he's referring to an object that is undefined
-                trigger_error('PHP Warning: Ad query parameter "'.$param.'" does not exist', E_USER_WARNING);
             }
 
-        } else {
-            $translation = isset($this->objects[$param]) ? $this->objects[$param] : '';
+        } elseif( isset($this->objects[$param]) ) {
+            $translation =  $this->objects[$param];
+        }
+
+        if( $translation === null && $this->debug ) {
+            // Tell the dev that he's referring to an object that is undefined
+            trigger_error('PHP Warning: Ad query parameter "'.$param.'" does not exist', E_USER_WARNING);
         }
 
         return $translation;
@@ -96,15 +112,25 @@ class ERWP_AdQueryParser {
 
     /**
      * Setup query object array. This should only be done once during the
-     * request to the application. It
+     * request to the application.
      */
-    protected function loadQueryObjects()
+    private function loadQueryObjects()
     {
         if( $this->objects === null ) {
             $this->objects = array('post' => get_queried_object());
-            $this->objects['category'] = wp_get_post_categories($this->objects['post']->ID);
-            // todo: add parent/child category
-            $this->objects = apply_filters('erwp_ad_query_objects', $this->objects);
+            if( !empty($this->objects['post']) ) {
+                $post_categories = wp_get_post_categories($this->objects['post']->ID);
+                if( !empty($post_categories) ) {
+                    $cat = get_category($post_categories[0]);
+                    if( !empty($cat->category_parent) ) {
+                        $this->objects['sub_category'] = $cat;
+                        $this->objects['category'] = get_category($cat->category_parent);
+                    } else {
+                        $this->objects['category'] = $cat;
+                    }
+                }
+                $this->objects = apply_filters('erwp_ad_query_objects', $this->objects);
+            }
         }
     }
 }
