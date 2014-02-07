@@ -1,4 +1,4 @@
 emediate-responsive-wp-plugin
 =============================
 
-emediate
+Collaboration between Norran, VK and Aftonbladet.
