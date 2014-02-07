@@ -1,0 +1,12 @@
+{
+  "name": "norvkab/emediate-responsive-wp-plugin",
+  "description": "Responsive ads for Emediate",
+  "keywords": ["wordpress", "plugin", "ads"],
+  "type": "wordpress-plugin",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:norvkab/emediate-responsive-wp-plugin.git"
+    }
+  ]
+}
