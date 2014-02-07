@@ -1,7 +1,7 @@
 {
   "name": "norvkab/emediate-responsive-wp-plugin",
   "description": "Responsive ads for Emediate",
-  "keywords": ["wordpress", "plugin", "ads"],
+  "keywords": ["wordpress", "plugin", "ads", "emediate"],
   "type": "wordpress-plugin",
   "repositories": [
     {
