@@ -1,3 +1,10 @@
+<?
+if(!empty($_POST)){
+    ERWP_Options::save($_POST);
+    echo "<h1>Saved:".date("H:i:s")."</h1>";
+}
+?>
+
 <div class="wrap">
 
     <div id="icon-options-general" class="icon32"><br/></div>
@@ -114,7 +121,3 @@
 
     </form>
 </div>
-<?
-if(!empty($_POST)){
-    ERWP_Options::save($_POST);
-}
