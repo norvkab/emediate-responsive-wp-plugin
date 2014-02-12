@@ -3,15 +3,15 @@
 Plugin Name: Emediate responsive wordpress plugin
 Description: Integrates the website with Emediate ad manager
 Version: 0.1
-Author: Victor Jonsson <http://victorjonsson.se/>, Tom Brännström
+Author: norvkab <https://github.com/norvkab/>
 */
 
 
-define('EMEDIATE_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('EMEDIATE_PLUGIN_VERSION', '0.1.1');
-define('EMEDIATE_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
-include_once EMEDIATE_PLUGIN_PATH.'functions.php';
+define('ERWP_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('ERWP_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
+define('ERWP_PLUGIN_VERSION', '0.1.1');
 
+require_once ERWP_PLUGIN_PATH.'/class-loader.php';
 
 if(is_admin()){
     add_action('admin_menu', function() {
@@ -21,9 +21,9 @@ if(is_admin()){
             'manage_options',
             'emediate-settings',
             function() {
-                require_once EMEDIATE_PLUGIN_PATH.'/templates/admin/settings-page.php';
+                require_once ERWP_PLUGIN_PATH.'/templates/admin/settings-page.php';
             }
         );
-        wp_enqueue_script('admin-'.$js_hook, EMEDIATE_PLUGIN_URL.'templates/admin/admin-ui.js', array('jquery'), EMEDIATE_PLUGIN_VERSION);
+        wp_enqueue_script('admin-'.$js_hook, ERWP_PLUGIN_URL.'templates/admin/admin-ui.js', array('jquery'), ERWP_PLUGIN_VERSION);
     });
 }

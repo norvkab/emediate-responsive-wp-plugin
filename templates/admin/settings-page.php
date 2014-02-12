@@ -3,15 +3,16 @@ if(!empty($_POST)){
     ERWP_Options::save($_POST);
     echo "<h1>Saved:".date("H:i:s")."</h1>";
 }
-?>
 
+$emediate_opts = ERWP_Options::load();
+
+?>
 <div class="wrap">
 
     <div id="icon-options-general" class="icon32"><br/></div>
     <h2>Emediate Responsive Wordpress Plugin</h2>
 
     <form method="post" action="" >
-        <? $emediate_opts = ERWP_Options::load(); ?>
         <div id="icon-options-general" class="icon32"><br/></div>
         <h2>Breakpoints</h2>
         <div id="emediate_breakpoints">
@@ -22,9 +23,9 @@ if(!empty($_POST)){
                     <td></td>
                 </tr>
                 <?php
-                if(isset($emediate_opts['emediate_options']['breakpoints'])){
+                if( !empty($emediate_opts['breakpoints']) ) {
                     $i = 0;
-                    foreach ($emediate_opts['emediate_options']['breakpoints'] as $opts) {
+                    foreach ($emediate_opts['breakpoints'] as $opts) {
                         ?>
                         <tr>
 
@@ -60,9 +61,9 @@ if(!empty($_POST)){
                     <td></td>
                 </tr>
                 <?php
-                if(isset($emediate_opts)){
+                if( !empty($emediate_opts['ads']) ){
                     $i = 0;
-                    foreach ($emediate_opts['emediate_options']['ads'] as $opts) {
+                    foreach ($emediate_opts['ads'] as $opts) {
                         ?>
                         <tr>
                             <td>
