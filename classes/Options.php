@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class that has the know-how to create markup for emediate ads
+ * Class that can create/update options
  *
  * @since 0.1
  * @package ERWP
