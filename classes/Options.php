@@ -32,11 +32,7 @@ class ERWP_Options {
      */
     static function save($options)
     {
-        if( MULTISITE && !is_network_admin() ) {
-            update_site_option('erwp_options', $options);
-        } else {
-            update_option('erwp_options', $options);
-        }
+        update_site_option('erwp_options', $options);
     }
 
 }

@@ -41,16 +41,15 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
     function testFifWithOutBreakPoints()
     {
         $creator = new ERWP_AdCreator();
+
         $ad_index = ERWP_AdCreator::currentAdIndex();
         $created_js = $creator->create(123, 'fif');
         $expected_js = '<div id="fif-ad-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.'" data-cu="123"></div>';
-
         $this->assertEquals($expected_js, $created_js);
 
         $ad_index = ERWP_AdCreator::currentAdIndex();
         $created_js = $creator->create('666,12,33', 'fif');
         $expected_js = '<div id="fif-ad-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.'" data-cu="666"></div>';
-
         $this->assertEquals($expected_js, $created_js);
     }
 
@@ -61,9 +60,9 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
             array('min'=>400, 'max'=>1200),
             array('min'=>1200, 'max'=>5000),
         );
+        $creator = new ERWP_AdCreator($bp);
 
         // Missing one cu at the end
-        $creator = new ERWP_AdCreator($bp);
         $ad_index = ERWP_AdCreator::currentAdIndex();
         $created_js = $creator->create('11,12', 'fif');
         $expected_js = '<div id="fif-ad-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.
@@ -72,7 +71,6 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected_js, $created_js);
 
         // Missing one cu in the middle
-        $creator = new ERWP_AdCreator($bp);
         $ad_index = ERWP_AdCreator::currentAdIndex();
         $created_js = $creator->create('11,,12', 'fif');
         $expected_js = '<div id="fif-ad-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.
@@ -81,7 +79,6 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected_js, $created_js);
 
         // Only one cu
-        $creator = new ERWP_AdCreator($bp);
         $ad_index = ERWP_AdCreator::currentAdIndex();
         $created_js = $creator->create('11', 'fif');
         $expected_js = '<div id="fif-ad-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.
