@@ -61,7 +61,6 @@ if(!empty($_POST)){
                             </td>
                             <?
                                 $cus= 0;
-                                echo count($emediate_opts['emediate_options']['breakpoints']);
                                 while(count($emediate_opts['emediate_options']['breakpoints']) > $cus){ ?>
                                     <td>
                                         <strong>CU-<?=$cus?> </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][cu<?php echo $cus ?>]" value="<?=isset( $opts['cu'.$cus]) ? $opts['cu'.$cus] : ''?>" />
