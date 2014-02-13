@@ -1,7 +1,8 @@
 var EmediateAdmin = new function(){
     this.addAd = function() {
         var parent = document.createElement('tr');
-        var i = jQuery("#emediate_ads").children().length -1 ;
+        var i = jQuery("#emediate_ads").children().length-1 ;
+        var j = jQuery("#emediate_breakpoints").children().length-1;
         // Slug
 
         var slug = document.createElement('input');
@@ -9,12 +10,8 @@ var EmediateAdmin = new function(){
         slug.name="emediate_options[ads]["+i+"][slug]";
         slug.placeholder = "Slug";
 
-        // CU
 
-        var cu = document.createElement('input');
-        cu.type='text';
-        cu.name="emediate_options[ads]["+i+"][cu]";
-        cu.placeholder = "CU";
+
 
         // Implementation
 
@@ -46,7 +43,17 @@ var EmediateAdmin = new function(){
         remove_button.value='Ta Bort';
 
         parent.appendChild(document.createElement('td').appendChild(slug));
-        parent.appendChild(document.createElement('td').appendChild(cu));
+
+        // CU
+
+        for(var bp=0;bp<j;bp++){
+            var cu = document.createElement('input');
+            cu.type='text';
+            cu.name="emediate_options[ads]["+i+"][cu"+bp+"]";
+            cu.placeholder = "CU-"+bp;
+            parent.appendChild(document.createElement('td').appendChild(cu));
+        }
+
         parent.appendChild(document.createElement('td').appendChild(implemention));
         parent.appendChild(document.createElement('td').appendChild(status));
         parent.appendChild(document.createElement('td').appendChild(action));
@@ -60,7 +67,7 @@ var EmediateAdmin = new function(){
         var parent = document.createElement('tr');
 
         // Min width
-        var i = jQuery("#emediate_breakpoints table tbody").children().length - 1;
+        var i = jQuery("#emediate_breakpoints table tbody").children().length;
         var min = document.createElement('input');
         min.type='text';
         min.name="emediate_options[breakpoints]["+i+"][min_width]";
