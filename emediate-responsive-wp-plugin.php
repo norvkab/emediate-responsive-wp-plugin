@@ -3,7 +3,7 @@
 Plugin Name: Emediate Responsive Wordpress Plugin
 Description: Integrates the website with Emediate ad manager
 Version: 0.1
-Author: Victor Jonsson <http://victorjonsson.se/>, Tom Brännström
+Author: norvkab <https://github.com/norvkab/>
 */
 
 
