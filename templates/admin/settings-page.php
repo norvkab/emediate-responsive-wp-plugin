@@ -18,9 +18,9 @@ if(!empty($_POST['emediate_options'])){
             <table class="widefat">
 
                 <?php
-                if(isset($emediate_opts['emediate_options']['breakpoints'])){
+                if(isset($emediate_opts['breakpoints'])){
                     $i = 0;
-                    foreach ($emediate_opts['emediate_options']['breakpoints'] as $opts) {
+                    foreach ($emediate_opts['breakpoints'] as $opts) {
                         ?>
                         <tr>
 
@@ -50,10 +50,10 @@ if(!empty($_POST['emediate_options'])){
         <div id="emediate_ads">
             <table class="widefat">
                 <?php
-                if(isset($emediate_opts['emediate_options']['ads'])){
+                if(isset($emediate_opts['ads'])){
                     $i = 0;
-                    echo count($emediate_opts['emediate_options']['ads']);
-                    foreach ($emediate_opts['emediate_options']['ads'] as $opts) {
+                    echo count($emediate_opts['ads']);
+                    foreach ($emediate_opts['ads'] as $opts) {
                         ?>
                         <tr>
                             <td>
@@ -61,7 +61,7 @@ if(!empty($_POST['emediate_options'])){
                             </td>
                             <?
                                 $cus= 0;
-                                while(count($emediate_opts['emediate_options']['breakpoints']) > $cus){ ?>
+                                while(count($emediate_opts['breakpoints']) > $cus){ ?>
                                     <td>
                                         <strong>CU-<?=$cus?> </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][cu<?php echo $cus ?>]" value="<?=isset( $opts['cu'.$cus]) ? $opts['cu'.$cus] : ''?>" />
                                     </td>
