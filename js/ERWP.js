@@ -136,7 +136,7 @@ var ERWP = (function($, erwpSettings) {
                 if( this.shouldHideFif(iframeWin) ) {
                     var $adElem = this.getAdElementFromFifIframe(iframeWin);
                     $adElem.html('');
-                    $win.trigger('erwpAdHidden', [$ad]);
+                    $win.trigger('erwpAdHidden', [$adElem]);
                 }
             },
 
