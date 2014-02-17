@@ -34,7 +34,7 @@ add_action('wp_head', function() { ?>
 #### Events
 
 `erwpBreakPointChange` — Called each time the client has entered a new break point. This happens when you change
-the size of the browser window or when you change rotation of a tablet.
+the size of the browser window or when you change orientation on a tablet.
 
 `erwpShouldHideAd` — The plugin will check if the HTML of an ad contains <!-- no matching campaign --> to determine
 if the ad should be hidden. This event makes it possible to do more checks against the HTML content of the add. If you
