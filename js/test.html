@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>ERWP js test</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <script src="http://ad1.emediate.dk/EAS_tag.1.0.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+    <script>
+        // Settings coming from the plugin
+        var erwpSettings = {
+            adQuery : '',
+            fifHtmlFile : 'EAS_fif.html#eas-host=ad1.emediate.dk',
+            defaultJSHost : 'ad1.emediate.dk',
+            cuParamName : 'cu',
+            breakPoints : [
+                {min:0, max:400},
+                {min:400, max:800},
+                {min: 800, max:9999}
+            ]
+        }
+    </script>
+
+    <script src="ERWP.js"></script>
+
+    <script>
+        var log = function() {
+            $('#win-width').text(ERWP.winWidth);
+            $('#break-point').text(JSON.stringify(ERWP.breakPoint));
+        };
+
+        $(window)
+            .on('erwpBreakPointChange', log)
+            .on('erwpFifCreated', function(evt, adSource, $adElem) {
+                log();
+                $('#ad-src').text(adSource);
+                $('#reloaded').fadeOut(500, function() {
+                    $(this).fadeIn();
+                })
+            });
+    </script>
+
+</head>
+<body>
+
+<div style="margin: 10px auto; max-width: 1100px;">
+
+
+    <!-- Log container -->
+    <div>
+        <p id="reloaded" style="display: none; background: #90ee90; color: darkgreen; margin-bottom: 10px">
+            Ad loaded:<br /> <strong id="ad-src"></strong>
+        </p>
+        <p>
+            <strong>Window width:</strong> <span id="win-width"></span>
+        </p>
+        <p>
+            <strong>Break point:</strong> <span id="break-point"></span>
+        </p>
+    </div>
+
+    <hr />
+
+    <!-- ad markup begin -->
+    <div id="emediate-fif-1" class="emediate-ad fif"
+            data-index="1"
+            data-bp-0-400="25033"
+            data-bp-400-800="25026"
+            data-bp-800-9999="25027"
+            ></div>
+    <script> ERWP.fif(1) </script>
+    <!-- ad markup end -->
+
+
+</div>
+
+</body>
+</html>
