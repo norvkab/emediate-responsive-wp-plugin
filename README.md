@@ -1,7 +1,7 @@
 emediate-responsive-wp-plugin
 =============================
 
-Collaboration between Norran, VK and Aftonbladet.
+*Collaboration between Norran, VK and Aftonbladet.*
 
 ## Admin page
 
@@ -36,13 +36,13 @@ add_action('wp_head', function() { ?>
 `erwpBreakPointChange` — Called each time the client has entered a new break point. This happens when you change
 the size of the browser window or when you change rotation of a tablet.
 
-`erwpShouldHideAd` - The plugin will check if the HTML of an ad contains <!-- no matching campaign --> to determine
+`erwpShouldHideAd` — The plugin will check if the HTML of an ad contains <!-- no matching campaign --> to determine
 if the ad should be hidden. This event makes it possible to do more checks against the HTML content of the add. If you
 return true from this callback the add will become hidden.
 
-`erwpAdRemoved` - This event is called every time an ad becomes hidden.
+`erwpAdHidden` — This event is called every time an ad becomes hidden.
 
-`erwpFiFRendered` — This event is called every time an ad is rendered
+`erwpFifCreated` — This event is called every time an ad is rendered
 
 
 ```js
@@ -50,9 +50,9 @@ $(window)
     .on('erwpBreakPointChange', function() {
         // We have entered a new break point
     })
-    .on('erwpShouldHideAd', function(evt, fifWindow) {
+    .on('erwpShouldHideAd', function(evt, fifWin) {
         // If an ad iframe contains this special comment we should hide the ad
-        if( fifWindow.body.innerHTML.indexOf('<!-- my-custom-no-ad-comment -->') > -1 ) {
+        if( fifWin.body.innerHTML.indexOf('<!-- custom-no-ad-comment -->') > -1 ) {
             return true;
         }
     })
@@ -62,7 +62,8 @@ $(window)
     })
     .on('erwpFifCreated', function(evt, adSrc, $fifAdElement) {
         // The iframe is rendered, soon there will be an ad here...
-        // Lets remove the .no-ad-here class in case it was added on previous break point
+        // Lets remove the .no-ad-here class in case it was 
+        // added on previous break point
         $fifAdElement.parent().removeClass('no-ad-here');
     })
 ```
