@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8" />
+    <title>EAS_fif</title>
+    <script type="text/javascript" src="http://ad1.emediate.dk/EAS_tag.1.0.js"></script>
+</head>
+<body style="margin:0px; border:0px; padding:0px;">
+<script type="text/javascript">
+
+    var inDapIF=true;
+    document.write('<scr'+'ipt type="text/javascript" src="'+window.frameElement.EAS_src+'"></scr'+'ipt>');
+
+    var removeTries = 0,
+        removeAdInterval = setInterval(function() {
+
+            removeTries++;
+            if(removeTries > 4) {
+                clearInterval(removeAdInterval);
+            }
+
+            if( document.getElementsByTagName('body')[0].innerHTML.indexOf('<'+'!-- No matching campaign --'+'>') > -1 ) {
+                var cu = window.frameElement.EAS_src.split('cu=')[1].split(';')[0];
+                var iframe = window.parent.document.getElementById('EAS_fif_'+cu);
+                iframe.parentNode.removeChild(iframe);
+                clearInterval(removeAdInterval);
+            }
+
+        }, 400);
+
+</script>
+</body>
+</html>

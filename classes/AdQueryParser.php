@@ -20,6 +20,7 @@ class ERWP_AdQueryParser {
      * a property named "post" referring to an object having
      * the property "post_title"
      *
+     * @see ERWP_AdQueryParse::loadQueryObjects()
      * @var array
      */
     private $objects = null;

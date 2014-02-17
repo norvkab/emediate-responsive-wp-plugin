@@ -15,7 +15,7 @@ class ERWP_Options {
     {
         $default_opts = array(
             'ads' => array(),
-            'break_points' => array(),
+            'breakpoints' => array(),
             'default_js_host' => 'ad1.emediate.dk',
             'cu_param_name' => 'cu'
         );

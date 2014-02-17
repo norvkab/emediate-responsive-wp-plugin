@@ -44,15 +44,16 @@ class ERWP_AdCreator {
     /**
      * @param string|int $cu Either one cu number/key or comma separated list with cu numbers/keys
      * @param string $impl Either 'js' or 'fif'
+     * @param int $height Default height of the ad, only used when using the fif implementation
      * @return string
      */
-    public function create($cu, $impl)
+    public function create($cu, $impl, $height=0)
     {
         $cu_nums = explode(',', $cu);
         if( $impl == 'js' ) {
             return $this->createComposedJSAd( current($cu_nums) );
         } else {
-            return $this->createFifAd($cu_nums);
+            return $this->createFifAd($cu_nums, $height);
         }
     }
 
@@ -68,21 +69,23 @@ class ERWP_AdCreator {
 
     /**
      * @param array $cu_nums
+     * @param int $height
      * @return string
      */
-    private function createFifAd($cu_nums)
+    private function createFifAd($cu_nums, $height)
     {
         $attr = array(
             'id' => 'fif-ad-'.self::$ad_index,
             'class' => 'emediate-ad fif',
-            'data-ad-index' => self::$ad_index
+            'data-ad-index' => self::$ad_index,
+            'data-height' => $height
         );
 
         if( empty($this->break_points) ) {
             $attr['data-cu'] = trim(current($cu_nums));
         } else {
             foreach ($this->break_points as $i => $bp) {
-                $bp_attr = 'data-breakpoint-' . $bp['min'] . '-' . $bp['max'];
+                $bp_attr = 'data-bp-' . $bp['min_width'] . '-' . $bp['max_width'];
                 $attr[$bp_attr] = empty($cu_nums[$i]) ? '' : trim($cu_nums[$i]);
             }
         }
@@ -91,9 +94,10 @@ class ERWP_AdCreator {
             $div .= ' '.$name.'="'.$val.'"';
         }
 
+        $div .= '></div>'.PHP_EOL.'<script>ERWP.fif('.self::$ad_index.')</script>';
         self::$ad_index++;
 
-        return $div . '></div>';
+        return $div;
     }
 
     /**
