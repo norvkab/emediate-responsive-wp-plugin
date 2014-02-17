@@ -100,6 +100,9 @@ if(!empty($_POST['emediate_options'])){
                                 </select>
                             </td>
                             <td>
+                                <strong>Height: </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][height]" value="<?= $opts['height']?>" />
+                            </td>
+                            <td>
                                 <input type="button" class="button-secondary" value="Ta Bort" onclick="EmediateAdmin.remove(jQuery(this).parent().parent())"/>
                             </td>
                             <br/>
