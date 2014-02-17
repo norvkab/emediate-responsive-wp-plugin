@@ -13,4 +13,4 @@ require_once __DIR__ . '/../../../../../wp-load.php';
 require_once __DIR__ . '/../../../../../vendor/autoload.php';
 
 // Load classes
-require_once __DIR__.'/../AdQueryParser.php';
+require_once __DIR__.'/../class-loader.php';
