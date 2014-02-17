@@ -6,12 +6,6 @@ var ERWP = (function($, erwpSettings) {
         ERWP = {
 
             /**
-             * Current window size
-             * @var {Number}
-             */
-            winWidth : 0,
-
-            /**
              * Current break point
              * @var {Object|Boolean}
              */
@@ -99,20 +93,18 @@ var ERWP = (function($, erwpSettings) {
             },
 
             /**
-             * Figures out the current break point that we're in
-             * @return {Object|Boolean}
+             * Figures out the break point for given window width
+             * @param {Number} windowWidth
+             * @return {Object|Boolean} Returns false if not suitable break point could be found
              */
-            currentBreakPoint : function() {
-                var _self = this,
-                    current = false;
-
-                $.each(erwpSettings.breakPoints, function(i, bp) {
-                    if( _self.winWidth >= bp.min && _self.winWidth < bp.max ) {
-                        current = bp;
+            getBreakPoint : function(windowWidth) {
+                var current = false;
+                $.each(erwpSettings.breakPoints, function(i, breakPoint) {
+                    if( windowWidth >= breakPoint.min && windowWidth < breakPoint.max ) {
+                        current = breakPoint;
                         return false;
                     }
                 });
-
                 return current;
             },
 
@@ -120,9 +112,8 @@ var ERWP = (function($, erwpSettings) {
              * Iterate through all fif-ad elements and re-insert fif-ad
              */
             reloadFiFAds : function() {
-                var _self = this;
                 $.each(ERWP.$fifAds, function(i, $adElem) {
-                    _self.renderFifAd($adElem);
+                    ERWP.renderFifAd($adElem);
                 });
             },
 
@@ -173,15 +164,13 @@ var ERWP = (function($, erwpSettings) {
     if( ERWP.hasRegisteredBreakPoints ) {
 
         // figure out current break point
-        ERWP.winWidth = $win.width();
-        ERWP.breakPoint = ERWP.currentBreakPoint();
+        ERWP.breakPoint = ERWP.getBreakPoint($win.width());
 
         // Capture window width and figure out current break-point
         // when window size changes. If we have a new break-point
         // all fif ads gets reloaded
         $win.on('resize', function() {
-            ERWP.winWidth = $win.width();
-            var breakPoint = ERWP.currentBreakPoint();
+            var breakPoint = ERWP.getBreakPoint($win.width());
             if( breakPoint != ERWP.breakPoint ) {
                 // break point has changed
                 ERWP.breakPoint = breakPoint;
