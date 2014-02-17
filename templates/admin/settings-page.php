@@ -1,5 +1,5 @@
 <?
-if(!empty($_POST)){
+if(!empty($_POST['emediate_options'])){
     ERWP_Options::save($_POST['emediate_options']);
     echo "<h1>Saved:".date("H:i:s")."</h1>";
 }
