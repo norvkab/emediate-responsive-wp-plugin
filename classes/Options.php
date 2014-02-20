@@ -18,7 +18,8 @@ class ERWP_Options {
             'breakpoints' => array(),
             'default_js_host' => 'ad1.emediate.dk',
             'cu_param_name' => 'cu',
-            'empty_ad_tags' => ''
+            'empty_ad_tags' => '',
+            'ad_query' => ''
         );
         $default_opts = apply_filters('erwp_options', $default_opts);
         $options = array_merge($default_opts, get_option('erwp_options', array()));

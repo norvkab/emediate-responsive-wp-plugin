@@ -29,7 +29,7 @@ class ERWP_Plugin {
         self::$ad_markup_creator = new ERWP_AdCreator(
                                     self::$opts['breakpoints'],
                                     self::$opts['default_js_host'],
-                                    self::$opts['cu_key_name']
+                                    self::$opts['cu_param_name']
                                 );
 
         // Add emediate and erwp javascript
