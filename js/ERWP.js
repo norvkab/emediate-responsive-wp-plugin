@@ -93,7 +93,7 @@ var ERWP = (function($, window, erwpSettings) {
                     // Load fif
                     // window.EAS_load_fif('emediate-fif-'+$elem.attr('data-index'), erwpSettings.fifHtmlFile, src, width, height);
                     // Here we use the undocumented EAS_create_iframe to get hold of the iframe document
-                    var iframe = window.EAS_create_iframe($elem.get(0), 0, 0, erwpSettings.fifHtmlFile);
+                    var iframe = window.EAS_create_iframe($elem.get(0), width, height, erwpSettings.fifHtmlFile);
                     iframe.EAS_src = src+";fif=y";
                     iframe.ERWP_fifIndex = $elem.attr('data-index');
 
