@@ -77,7 +77,7 @@ var ERWP = (function($, window, erwpSettings) {
                 }
 
                 if( !cu ) {
-                    this.hideAd($elem); // Current break-point may not have an ad
+                    this.hideAd($elem); // Current break-point does not have an ad
                 }
                 else if( $elem.attr('data-current-cu') != cu ) {
 
@@ -211,7 +211,7 @@ var ERWP = (function($, window, erwpSettings) {
         // Capture window width and figure out current break-point
         // when window size changes. If we have a new break-point
         // all fif ads gets reloaded
-        $win.on('resize', function() {
+        var onWindowResize = function() {
             var breakPoint = ERWP.getBreakPoint($win.width());
             if( breakPoint != ERWP.breakPoint ) {
                 // break point has changed
@@ -219,11 +219,9 @@ var ERWP = (function($, window, erwpSettings) {
                 ERWP.reloadFiFAds();
                 $win.trigger('erwpBreakPointChange', [ERWP.breakPoint]);
             }
-        });
-
-        $win.on('orientationchange', function() {
-            alert('orientation change....');
-        });
+        };
+        $win.on('resize', onWindowResize);
+        $win.on('orientationchange', onWindowResize);
     }
 
     return ERWP;
