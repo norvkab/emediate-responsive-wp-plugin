@@ -3,22 +3,17 @@ emediate-responsive-wp-plugin
 
 *Collaboration between Norran, VK and Aftonbladet.*
 
-## Admin page
+### Admin page
 
 This section of the documentation will go through how you setup the plugin using the settings page in wp-admin
 
 **TODO: write important stuff...**
 
 
-## Theme implementation
 
-This section of the documentation will go through the javascript events that's triggered by the plugin
-when the ads gets rendered.
+### Creating ads programmatically
 
-
-#### Creating ads programmatically
-
-There's two ways to create ads programmatically. Either you use the class `Emediate_Plugin` and refer to an ad that
+There are two ways to create ads programmatically. Either you use the class `Emediate_Plugin` and refer to an ad that
 you have created in the admin page. The other way is to use `ERWP_AdCreator`, which makes it possible to define all
 the parameters on-the-fly in your code.
 
@@ -41,7 +36,7 @@ $ad_html = $ad_creator->create($cu, $impl, $ad_height);
 ```
 
 
-#### Ad server requests
+### Ad server requests
 
 Each ad will make a request to the ad server containing a CU-parameter and a query-string containing information
 about the current page, this looks something like `?cre=mu;js=y;target=_blank;cu=25027;...`. You can modify the
@@ -56,7 +51,7 @@ add_action('wp_head', function() { ?>
 <?php });
 ```
 
-#### Javascript events
+### Javascript events
 
 `erwpBreakPointChange` — Called each time the client has entered a new break point. This happens when you change
 the size of the browser window or when you change orientation on a tablet.
