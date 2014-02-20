@@ -24,18 +24,18 @@ the parameters on-the-fly in your code.
 
 ```php
 <?php
-
 // The easy way, still controlling the ad form the admin page
 $ad_html = ERWP_Plugin::generateAdMarkup('my-ad-slug');
 
 // The hard way
 $break_points = array();
-$js_host = '';
-$cu_param_name = '';
+$js_host = 'ad1.emediate.dk';
+$cu_param_name = 'cu';
 $cu = 1283;
 $impl = 'fif'; // either 'js' or 'fif'
 $ad_height = 320;
-$ad_creator = new ERWP_AdCreator($break_point, $js_host, $cu_param_name);
+
+$ad_creator = new ERWP_AdCreator($break_points, $js_host, $cu_param_name);
 $ad_html = $ad_creator->create($cu, $impl, $ad_height);
 
 ```

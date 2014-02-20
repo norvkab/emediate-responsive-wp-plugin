@@ -24,4 +24,6 @@ if( is_admin() ) {
         );
         wp_enqueue_script('admin-'.$js_hook, ERWP_PLUGIN_URL.'templates/admin/admin-ui.js', array('jquery'), ERWP_PLUGIN_VERSION);
     });
+} else {
+    add_action('template_redirect', 'ERWP_Plugin::themeInit');
 }
