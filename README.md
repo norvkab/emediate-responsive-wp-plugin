@@ -18,14 +18,14 @@ when the ads gets rendered.
 
 #### Creating ads programmatically
 
-There's two ways to create ads programmatically. Either you use the class `Emediate_Plugin` and refer to an add that
+There's two ways to create ads programmatically. Either you use the class `Emediate_Plugin` and refer to an ad that
 you have created in the admin page. The other way is to use `ERWP_AdCreator`, which makes it possible to define all
 the parameters on-the-fly in your code.
 
 ```php
 <?php
-// The easy way, still controlling the ad form the admin page
-$ad_html = ERWP_Plugin::generateAdMarkup('my-ad-slug');
+// The easy way, still controlling the ad from the admin page
+$ad_html = ERWP_Plugin::generateAdMarkup('my-ad-slug', false);
 
 // The hard way
 $break_points = array();
