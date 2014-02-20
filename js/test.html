@@ -15,6 +15,7 @@
             adQuery : '',
             fifHtmlFile : 'EAS_fif.html#eas-host=ad1.emediate.dk',
             defaultJSHost : 'ad1.emediate.dk',
+            emptyAdTags : '',
             cuParamName : 'cu',
             breakPoints : [
                 {min:0, max:400},
@@ -27,19 +28,13 @@
     <script src="ERWP.js"></script>
 
     <script>
-        var log = function() {
-            $('#win-width').text(ERWP.winWidth);
-            $('#break-point').text(JSON.stringify(ERWP.breakPoint));
-        };
 
         $(window)
-            .on('erwpBreakPointChange', log)
-            .on('erwpFifCreated', function(evt, adSource, $adElem) {
-                log();
-                $('#ad-src').text(adSource);
-                $('#reloaded').fadeOut(500, function() {
-                    $(this).fadeIn();
-                })
+            .on('erwpBreakPointChange', function(evt, breakPoint) {
+                console.log('Entered a new break point');
+            })
+            .on('erwpFifCreated', function(evt, adSource, $adElem, cu, breakPoint) {
+                console.log('Created ad '+$adElem.attr('data-index')+' with cu '+cu+' at break point '+JSON.stringify(breakPoint));
             });
     </script>
 
@@ -49,31 +44,44 @@
 <div style="margin: 10px auto; max-width: 1100px;">
 
 
-    <!-- Log container -->
-    <div>
-        <p id="reloaded" style="display: none; background: #90ee90; color: darkgreen; margin-bottom: 10px">
-            Ad loaded:<br /> <strong id="ad-src"></strong>
-        </p>
-        <p>
-            <strong>Window width:</strong> <span id="win-width"></span>
-        </p>
-        <p>
-            <strong>Break point:</strong> <span id="break-point"></span>
-        </p>
-    </div>
-
-    <hr />
+    <p>3 break-points</p>
 
     <!-- ad markup begin -->
     <div id="emediate-fif-1" class="emediate-ad fif"
             data-index="1"
             data-bp-0-400="25033"
-            data-bp-400-800="25026"
-            data-bp-800-9999="25027"
+            data-bp-400-800="25027"
+            data-bp-800-9999="25026"
             ></div>
     <script> ERWP.fif(1) </script>
     <!-- ad markup end -->
 
+    <hr />
+
+    <p>No break-points</p>
+
+    <!-- ad markup begin (only having one CU) -->
+    <div id="emediate-fif-2" class="emediate-ad fif"
+            data-index="2"
+            data-cu="25033"
+            ></div>
+    <script> ERWP.fif(2) </script>
+    <!-- ad markup end -->
+
+    <hr />
+
+    <p>Mobile/tablet break-points</p>
+
+    <!-- ad markup begin (only supporting tablet and mobile) -->
+    <div id="emediate-fif-3" class="emediate-ad fif"
+         data-index="3"
+         data-bp-0-400="25033"
+         data-bp-400-800="25027"
+            ></div>
+    <script> ERWP.fif(3) </script>
+    <!-- ad markup end -->
+
+    <hr />
 
 </div>
 

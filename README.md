@@ -31,39 +31,39 @@ add_action('wp_head', function() { ?>
 <?php });
 ```
 
-#### Events
+#### Javascript events
 
 `erwpBreakPointChange` — Called each time the client has entered a new break point. This happens when you change
 the size of the browser window or when you change orientation on a tablet.
 
-`erwpShouldHideAd` — The plugin will check if the HTML of an ad contains <!-- no matching campaign --> to determine
-if the ad should be hidden. This event makes it possible to do more checks against the HTML content of the add. If you
-return true from this callback the add will become hidden.
+`erwpFifCreated` — This event is called every time an ad is created.
 
-`erwpAdHidden` — This event is called every time an ad becomes hidden.
+`erwpAdLoaded` — This event is called when an ad iframe has finished loading. If you return false from this callback the add will become hidden.
 
-`erwpFifCreated` — This event is called every time an ad is rendered
+`erwpAdHidden` — This event is called every time an ad becomes hidden. An ad that doesn't become hidden will get the class `.has-add`
 
 
 ```js
 $(window)
-    .on('erwpBreakPointChange', function() {
+    .on('erwpBreakPointChange', function(evt, newBreakPoint) {
         // We have entered a new break point
     })
-    .on('erwpShouldHideAd', function(evt, fifWin) {
-        // If an ad iframe contains this special comment we should hide the ad
-        if( fifWin.body.innerHTML.indexOf('<!-- custom-no-ad-comment -->') > -1 ) {
-            return true;
-        }
-    })
-    .on('erwpAdHidden', function(evt, $fifAdElement) {
+    .on('erwpAdHidden', function(evt, $fifAdElement, breakPoint) {
         // apply a special class on ad containers containing an empty ad
         $fifAdElement.parent().addClass('no-ad-here');
     })
-    .on('erwpFifCreated', function(evt, adSrc, $fifAdElement) {
+    .on('erwpFifCreated', function(evt, adSrc, $fifAdElement, cu, breakPoint) {
         // The iframe is rendered, soon there will be an ad here...
-        // Lets remove the .no-ad-here class in case it was 
+        // Lets remove the .no-ad-here class in case it was
         // added on previous break point
         $fifAdElement.parent().removeClass('no-ad-here');
     })
+    .on('erwpAdLoaded', function(evt, fifWin, $fifAdElem, breakPoint) {
+        // If an ad iframe contains this special comment we should hide the ad
+        if( fifWin.body.innerHTML.indexOf('<!-- custom-no-ad-comment -->') > -1 ) {
+            return false; // Hide the add
+        }
+    });
 ```
+
+*These events is only triggered on fif ads, not composed js*

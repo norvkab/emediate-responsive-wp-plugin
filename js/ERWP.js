@@ -1,4 +1,4 @@
-var ERWP = (function($, erwpSettings) {
+var ERWP = (function($, window, erwpSettings) {
 
     'use strict';
 
@@ -13,12 +13,12 @@ var ERWP = (function($, erwpSettings) {
 
             /**
              * Array with html elements containing fif-ads (jQuery).
-             * This array will be populated while the page gets rendered
+             * This array will become populated while the page gets rendered
              * by calling ERWP.fif(...)
              *
              * @var {jQuery[]}
              */
-            $fifAds : [],
+            $fifAds : {},
 
             /**
              * Whether or not we support break points
@@ -49,10 +49,10 @@ var ERWP = (function($, erwpSettings) {
             fif : function(fifIndex) {
                 var $elem = $('#emediate-fif-'+fifIndex);
 
-                // Collect this ad element for later (when ad gets
-                // reloaded due to rotation change for example)
+                // Collect this ad element for later (when ad needs
+                // to be reloaded due to rotation change for example)
                 if( this.hasRegisteredBreakPoints ) {
-                    this.$fifAds.push($elem);
+                    this.$fifAds[fifIndex] = $elem;
                 }
 
                 // render ad
@@ -76,19 +76,28 @@ var ERWP = (function($, erwpSettings) {
                     cu = $elem.attr('data-cu');
                 }
 
-                if( $elem.attr('data-current-cu') != cu ) {
+                if( !cu ) {
+                    this.hideAd($elem); // Current break-point may not have an ad
+                }
+                else if( $elem.attr('data-current-cu') != cu ) {
 
-                    $elem.html(''); // clear possibly previous ad
+                    // Restore ad element
+                    $elem
+                        .removeClass('has-ad')
+                        .attr('data-current-cu', cu)
+                        .html('');
 
-                    $elem.attr('data-current-cu', cu);
-
-                    src = 'http://'+erwpSettings.defaultJSHost+'/eas?cre=mu;js=y;target=_blank;'+erwpSettings.cuParamName+'='+cu+
+                    src = '//'+erwpSettings.defaultJSHost+'/eas?cre=mu;js=y;target=_blank;'+erwpSettings.cuParamName+'='+cu+
                         ';'+erwpSettings.adQuery;
 
                     // Load fif
-                    window.EAS_load_fif('emediate-fif-'+$elem.attr('data-index'), erwpSettings.fifHtmlFile, src, width, height);
+                    // window.EAS_load_fif('emediate-fif-'+$elem.attr('data-index'), erwpSettings.fifHtmlFile, src, width, height);
+                    // Here we use the undocumented EAS_create_iframe to get hold of the iframe document
+                    var iframe = window.EAS_create_iframe($elem.get(0), 0, 0, erwpSettings.fifHtmlFile);
+                    iframe.EAS_src = src+";fif=y";
+                    iframe.ERWP_fifIndex = $elem.attr('data-index');
 
-                    $win.trigger('erwpFifCreated', [src, $elem]);
+                    $win.trigger('erwpFifCreated', [src, $elem, cu, this.breakPoint]);
                 }
             },
 
@@ -98,14 +107,14 @@ var ERWP = (function($, erwpSettings) {
              * @return {Object|Boolean} Returns false if not suitable break point could be found
              */
             getBreakPoint : function(windowWidth) {
-                var current = false;
+                var foundBreakPoint = false;
                 $.each(erwpSettings.breakPoints, function(i, breakPoint) {
                     if( windowWidth >= breakPoint.min && windowWidth < breakPoint.max ) {
-                        current = breakPoint;
+                        foundBreakPoint = breakPoint;
                         return false;
                     }
                 });
-                return current;
+                return foundBreakPoint;
             },
 
             /**
@@ -124,11 +133,26 @@ var ERWP = (function($, erwpSettings) {
              * @param {Window} iframeWin
              */
             fifLoaded : function(iframeWin) {
-                if( this.shouldHideFif(iframeWin) ) {
-                    var $adElem = this.getAdElementFromFifIframe(iframeWin);
-                    $adElem.html('');
-                    $win.trigger('erwpAdHidden', [$adElem]);
+                var $adElem = this.getAdElementFromFifIframe(iframeWin);
+                if( this.shouldHideFif(iframeWin, $adElem) ) {
+                    this.hideAd($adElem);
+                } else {
+                    $adElem.addClass('has-ad');
                 }
+            },
+
+            /**
+             * Hide an ad
+             * @param {jQuery} $adElem
+             */
+            hideAd : function($adElem) {
+                $adElem
+                    .height(0)
+                    .removeClass('has-ad')
+                    .attr('data-current-cu', '')
+                    .html('');
+
+                $win.trigger('erwpAdHidden', [$adElem, this.breakPoint]);
             },
 
             /**
@@ -136,27 +160,45 @@ var ERWP = (function($, erwpSettings) {
              * @return {jQuery}
              */
             getAdElementFromFifIframe : function(iframeWin) {
-                var cu = iframeWin.frameElement.EAS_src.split(erwpSettings.cuParamName+'=')[1].split(';')[0];
-                return $('.emediate-ad[data-current-cu="'+cu+'"]');
+                if( 'ERWP_fifIndex' in iframeWin.frameElement ) {
+                    return this.$fifAds[iframeWin.frameElement.ERWP_fifIndex];
+                } else {
+                    throw new Error('Fif iframe is missing ERWP_fifIndex');
+                }
             },
 
             /**
              * @param fifWin
              * @returns {Boolean}
              */
-            shouldHideFif : function (fifWin) {
-                var hasNoMatchingCampaignComment = function () {
-                        if ( !fifWin.body ) return false;
-                        return (-1 !== fifWin.body.innerHTML.indexOf('<!-- No matching campaign -->'));
+            shouldHideFif : function (fifWin, $adElem) {
+                var containsEmptyAdTag = function () {
+                        if ( !fifWin.body )
+                            return false;
+
+                        var hasEmptyAdTag = false,
+                            emptyAdTags = (erwpSettings.emptyAdTags || '').split('\n');
+
+                        emptyAdTags.push('<!-- No matching campaign -->');
+
+                        $.each(emptyAdTags, function(i, tag) {
+                            var emptyAdTag = $.trim(tag);
+                            if( emptyAdTag && fifWin.body.innerHTML.indexOf(emptyAdTag) > -1 ) {
+                                hasEmptyAdTag = true;
+                                return false;
+                            }
+                        });
+
+                        return hasEmptyAdTag;
                     },
                     containsAllScriptNodes = function () {
                         // No comment but no other elements either, check if div-container has anything more than the iframe
                         return fifWin.document.querySelectorAll("body script").length === fifWin.document.querySelectorAll("body *").length;
                     };
 
-                return hasNoMatchingCampaignComment() ||
+                return containsEmptyAdTag() ||
                         containsAllScriptNodes() ||
-                        $win.trigger('erwpShouldHideAd', [fifWin]) === true;
+                        $win.trigger('erwpAdLoaded', [fifWin, $adElem, this.breakPoint]) === false;
             }
         };
 
@@ -175,11 +217,15 @@ var ERWP = (function($, erwpSettings) {
                 // break point has changed
                 ERWP.breakPoint = breakPoint;
                 ERWP.reloadFiFAds();
-                $win.trigger('erwpBreakPointChange');
+                $win.trigger('erwpBreakPointChange', [ERWP.breakPoint]);
             }
+        });
+
+        $win.on('orientationchange', function() {
+            alert('orientation change....');
         });
     }
 
     return ERWP;
 
-})(jQuery, window.erwpSettings || {});
+})(jQuery, window, window.erwpSettings || {});
