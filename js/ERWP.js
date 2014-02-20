@@ -121,7 +121,7 @@ var ERWP = (function($, window, erwpSettings) {
              * Iterate through all fif-ad elements and re-insert fif-ad
              */
             reloadFiFAds : function() {
-                $.each(ERWP.$fifAds, function(i, $adElem) {
+                $.each(this.$fifAds, function(i, $adElem) {
                     ERWP.renderFifAd($adElem);
                 });
             },
