@@ -62,7 +62,7 @@ class ERWP_Plugin {
      */
     public static function addActionHook()
     {
-        echo self::generateAdMarkup(current_filter());
+        self::generateAdMarkup(current_filter());
     }
 
     /**
