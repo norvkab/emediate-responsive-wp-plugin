@@ -46,9 +46,10 @@ class ERWP_Plugin {
                 'fifHtmlFile' => ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host']
             )
         );
+
         // Hook into all ad-actions
         foreach(self::$opts['ads'] as $ad) {
-            if( $ad['action'] == 'Yes' ) {
+            if( !empty($ad['action']) ) {
                 add_action($ad['slug'], 'ERWP_Plugin::addActionHook');
             }
         }

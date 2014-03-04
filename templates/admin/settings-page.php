@@ -25,10 +25,10 @@ if(!empty($_POST['emediate_options'])){
                         <tr>
 
                             <td>
-                                <strong>Min-width: </strong><input type="text" name="emediate_options[breakpoints][<?php echo $i ?>][min_width]" value="<?= $opts['min_width']?>" />
+                                <strong>Min-width: </strong><input type="text" name="emediate_options[breakpoints][<?php echo $i ?>][min_width]" value="<?php echo $opts['min_width']?>" />
                             </td>
                             <td>
-                                <strong>Max-width: </strong><input type="text" name="emediate_options[breakpoints][<?php echo $i ?>][max_width]" value="<?= $opts['max_width']?>" />
+                                <strong>Max-width: </strong><input type="text" name="emediate_options[breakpoints][<?php echo $i ?>][max_width]" value="<?php echo $opts['max_width']?>" />
                             </td>
                             <td>
                                 <input type="button" class="button-secondary" value="Ta Bort" onclick="EmediateAdmin.remove(jQuery(this).parent().parent())"/>
@@ -56,13 +56,13 @@ if(!empty($_POST['emediate_options'])){
                         ?>
                         <tr>
                             <td>
-                                <strong>Slug: </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][slug]" value="<?= $opts['slug']?>" />
+                                <strong>Slug: </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][slug]" value="<?php echo $opts['slug']?>" />
                             </td>
                             <?
                                 $cus= 0;
                                 while(count($emediate_opts['breakpoints']) > $cus){ ?>
                                     <td>
-                                        <strong>CU-<?=$cus?> </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][cu<?php echo $cus ?>]" value="<?=isset( $opts['cu'.$cus]) ? $opts['cu'.$cus] : ''?>" />
+                                        <strong>CU-<?php echo$cus?> </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][cu<?php echo $cus ?>]" value="<?php echo isset($opts['cu'.$cus]) ? $opts['cu'.$cus] : ''?>" />
                                     </td>
 
                                <?   $cus++;
@@ -71,10 +71,10 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <strong>Implementation: </strong>
                                 <select type="text" name="emediate_options[ads][<?php echo $i ?>][implementation]" ?>">
-                                    <option <? if($opts['implementation'] == 'FIF') echo 'selected = selected'; ?> value="FIF">
+                                    <option <? if($opts['implementation'] == 'fif') echo 'selected = selected'; ?> value="fif">
                                         FIF
                                     </option>
-                                    <option <? if($opts['implementation'] == 'JS') echo 'selected = selected'; ?> value="JS">
+                                    <option <? if($opts['implementation'] == 'js') echo 'selected = selected'; ?> value="js">
                                         JS
                                     </option>
                                 </select>
@@ -82,10 +82,10 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <strong>Status: </strong>
                                 <select type="text" name="emediate_options[ads][<?php echo $i ?>][status]" ">
-                                    <option <? if($opts['status'] == 'Active') echo 'selected = selected'; ?> value="Active">
+                                    <option <? if( empty($opts['status']) || $opts['status'] != 'inactive' ) echo 'selected = selected'; ?> value="active">
                                         Active
                                     </option>
-                                    <option <? if($opts['status'] == 'Inactive') echo 'selected = selected'; ?> value="Inactive">
+                                    <option <? if( !empty($opts['status']) && $opts['status'] == 'inactive' ) echo 'selected = selected'; ?> value="inactive">
                                         Inactive
                                     </option>
                                 </select>
@@ -93,16 +93,16 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <strong>Action: </strong>
                                 <select type="text" name="emediate_options[ads][<?php echo $i ?>][action]"">
-                                    <option <? if($opts['action'] == 'Yes') echo 'selected = selected'; ?> value="Yes">
+                                    <option <? if( !empty($opts['action']) ) echo 'selected = selected'; ?> value="yes">
                                         Yes
                                     </option>
-                                    <option <? if($opts['action'] == 'No') echo 'selected = selected'; ?> value="No">
+                                    <option <? if( empty($opts['action']) ) echo 'selected = selected'; ?> value="">
                                         No
                                     </option>
                                 </select>
                             </td>
                             <td>
-                                <strong>Height: </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][height]" value="<?= $opts['height']?>" />
+                                <strong>Height: </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][height]" value="<?php echo empty($opts['height']) ? 0:$opts['height'] ?>" />
                             </td>
                             <td>
                                 <input type="button" class="button-secondary" value="Ta Bort" onclick="EmediateAdmin.remove(jQuery(this).parent().parent())"/>
@@ -127,7 +127,7 @@ if(!empty($_POST['emediate_options'])){
                    <strong>Default_js_host: </strong>
                </td>
                <td>
-                   <input type="text" name="emediate_options[default_js_host]" value="<?= $emediate_opts['default_js_host']?>" />
+                   <input type="text" name="emediate_options[default_js_host]" value="<?php echo $emediate_opts['default_js_host']?>" />
                </td>
             </tr>
             <tr>
@@ -135,7 +135,7 @@ if(!empty($_POST['emediate_options'])){
                     <strong>Cu_param_name: </strong>
                 </td>
                 <td>
-                    <input type="text" name="emediate_options[cu_param_name]" value="<?= $emediate_opts['cu_param_name']?>" />
+                    <input type="text" name="emediate_options[cu_param_name]" value="<?php echo $emediate_opts['cu_param_name']?>" />
                 </td>
             </tr>
             <tr>
@@ -143,7 +143,7 @@ if(!empty($_POST['emediate_options'])){
                     <strong>Empty_ad_tags: </strong>
                 </td>
                 <td>
-                    <textarea type="text" name="emediate_options[empty_ad_tags]" ><?= $emediate_opts['empty_ad_tags']?></textarea>
+                    <textarea type="text" name="emediate_options[empty_ad_tags]" ><?php echo $emediate_opts['empty_ad_tags']?></textarea>
                 </td>
             </tr>
             <tr>
