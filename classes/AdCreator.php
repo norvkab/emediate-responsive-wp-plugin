@@ -35,7 +35,6 @@ class ERWP_AdCreator {
      * @param string $cu_param_name
      */
     public function __construct($break_points=array(), $default_js_host='ad1.emediate.dk', $cu_param_name='cu'){
-       // _log($break_points);
         $this->break_points = $break_points;
         $this->default_js_host = $default_js_host;
         $this->cu_param_name = $cu_param_name;
@@ -61,7 +60,6 @@ class ERWP_AdCreator {
      * @return string
      */
     private function createComposedJSAd($cu){
-        _log($cu);
         $src = sprintf('//%s/eas?%s=%s;cre=mu;js=y;target=_blank;', $this->default_js_host, $this->cu_param_name, trim($cu));
         return "<script>ERWP.composed('" . $src . "')</script>";
     }

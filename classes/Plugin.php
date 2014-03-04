@@ -48,7 +48,6 @@ class ERWP_Plugin {
         );
         // Hook into all ad-actions
         foreach(self::$opts['ads'] as $ad) {
-            _log($ad);
             if( $ad['action'] == 'Yes' ) {
                 add_action($ad['slug'], 'ERWP_Plugin::addActionHook');
             }
@@ -104,7 +103,6 @@ class ERWP_Plugin {
                 $ad_html = self::$ad_markup_creator->create($cus, 'fif', $ad['height']);
             }
         }
-        _log($ad_html);
         if( $echo )
             echo $ad_html;
 
