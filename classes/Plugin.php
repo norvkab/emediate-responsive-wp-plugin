@@ -77,33 +77,31 @@ class ERWP_Plugin {
                 }
             }
             if( !is_array($ad) ) {
-                trigger_error('PHP Warning: Refering to an ad "'.$ad.'" that does not exist', E_USER_WARNING);
+                trigger_error('PHP Warning: Referring to an ad "'.$ad.'" that does not exist', E_USER_WARNING);
                 return '';
             }
         }
-        $ad_html = '';
-        $i = 0;
-        $cus = '';
 
-        while(true){
-            $array_key = 'cu'.$i;
-            if($i>0 && array_key_exists($array_key,$ad)){
-                $cus.= ',';
+        $ad_html = '';
+
+        if( $ad['status'] == 'active' ) {
+
+            $i = 0;
+            $cus = array();
+
+            // Collect cu's for each break point
+            while( array_key_exists('cu'.$i, $ad) ) {
+                $cus[] = $ad['cu'.$i];
+                $i++;
             }
-            if(array_key_exists($array_key,$ad)){
-                $cus .= $ad[$array_key];
-            } else {
-                break;
+
+            if( !empty($ad['cu']) ) {
+                $cus[] = $ad['cu'];
             }
-            $i++;
+
+            $ad_html = self::$ad_markup_creator->create($cus, $ad['implementation'], isset($ad['height']) ? $ad['height']:0);
         }
-        if( $ad['status'] == 'Active' ) {
-            if( $ad['implementation'] == 'JS' ) {
-                $ad_html = self::$ad_markup_creator->create($cus, 'js');
-            } else {
-                $ad_html = self::$ad_markup_creator->create($cus, 'fif', $ad['height']);
-            }
-        }
+
         if( $echo )
             echo $ad_html;
 

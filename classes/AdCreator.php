@@ -41,13 +41,15 @@ class ERWP_AdCreator {
     }
 
     /**
-     * @param string|int $cu Either one cu number/key or comma separated list with cu numbers/keys
+     * @param string|int|array $cu_nums Either one cu number/key or comma separated list with cu numbers/keys
      * @param string $impl Either 'js' or 'fif'
      * @param int $height Default height of the ad, only used when using the fif implementation
      * @return string
      */
-    public function create($cu, $impl, $height=0){
-        $cu_nums = explode(',', $cu);
+    public function create($cu_nums, $impl, $height=0){
+        if( !is_array($cu_nums) )
+            $cu_nums = explode(',', $cu_nums);
+
         if( $impl == 'js' ) {
             return $this->createComposedJSAd( current($cu_nums) );
         } else {
@@ -61,7 +63,7 @@ class ERWP_AdCreator {
      */
     private function createComposedJSAd($cu){
         $src = sprintf('//%s/eas?%s=%s;cre=mu;js=y;target=_blank;', $this->default_js_host, $this->cu_param_name, trim($cu));
-        return "<script>ERWP.composed('" . $src . "')</script>";
+        return "<script>ERWP.composed('" . $src . "')</script>\n";
     }
 
     /**

@@ -15,7 +15,7 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
     {
         $creator = new ERWP_AdCreator();
         $created_js = $creator->create(123, 'js');
-        $expected_js = "<script>ERWP.composed('//ad1.emediate.dk/eas?cu=123;cre=mu;js=y;target=_blank;')</script>";
+        $expected_js = "<script>ERWP.composed('//ad1.emediate.dk/eas?cu=123;cre=mu;js=y;target=_blank;')</script>\n";
 
         $this->assertEquals($expected_js, $created_js);
     }
@@ -24,7 +24,7 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
     {
         $creator = new ERWP_AdCreator(array(), 'groda.com', 'cu_key');
         $created_js = $creator->create('test', 'js');
-        $expected_js = "<script>ERWP.composed('//groda.com/eas?cu_key=test;cre=mu;js=y;target=_blank;')</script>";
+        $expected_js = "<script>ERWP.composed('//groda.com/eas?cu_key=test;cre=mu;js=y;target=_blank;')</script>\n";
 
         $this->assertEquals($expected_js, $created_js);
     }
@@ -33,7 +33,7 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
     {
         $creator = new ERWP_AdCreator();
         $created_js = $creator->create('99,12,34', 'js');
-        $expected_js = "<script>ERWP.composed('//ad1.emediate.dk/eas?cu=99;cre=mu;js=y;target=_blank;')</script>";
+        $expected_js = "<script>ERWP.composed('//ad1.emediate.dk/eas?cu=99;cre=mu;js=y;target=_blank;')</script>\n";
 
         $this->assertEquals($expected_js, $created_js);
     }
