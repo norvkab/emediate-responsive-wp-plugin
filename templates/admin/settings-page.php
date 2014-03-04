@@ -52,7 +52,6 @@ if(!empty($_POST['emediate_options'])){
                 <?php
                 if(isset($emediate_opts['ads'])){
                     $i = 0;
-                    echo count($emediate_opts['ads']);
                     foreach ($emediate_opts['ads'] as $opts) {
                         ?>
                         <tr>
