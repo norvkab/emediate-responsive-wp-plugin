@@ -22,8 +22,7 @@ class ERWP_Plugin {
     /**
      * Should be called once before the page gets rendered
      */
-    public static function themeInit()
-    {
+    public static function themeInit(){
         // Load our options
         self::$opts = ERWP_Options::load();
         self::$ad_markup_creator = new ERWP_AdCreator(
@@ -31,7 +30,6 @@ class ERWP_Plugin {
                                     self::$opts['default_js_host'],
                                     self::$opts['cu_param_name']
                                 );
-
         // Add emediate and erwp javascript
         $query_parser = new ERWP_AdQueryParser();
         wp_enqueue_script('emediate-eas', '//'.self::$opts['default_js_host'].'/EAS_tag.1.0.js', array(), '1.0');
@@ -48,11 +46,11 @@ class ERWP_Plugin {
                 'fifHtmlFile' => ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host']
             )
         );
-
         // Hook into all ad-actions
         foreach(self::$opts['ads'] as $ad) {
-            if( $ad['action'] == 'yes' ) {
-                add_action($ad['slug'], 'ERWP_AdCreator::addActionHook');
+
+            if( $ad['action'] == 'Yes' ) {
+                add_action($ad['slug'], 'ERWP_Plugin::addActionHook');
             }
         }
     }
@@ -70,8 +68,7 @@ class ERWP_Plugin {
      * @param bool $echo
      * @return string
      */
-    public static function generateAdMarkup($ad, $echo = true)
-    {
+    public static function generateAdMarkup($ad, $echo = true){
         if( !is_array($ad) ) {
             foreach(self::$opts['ads'] as $ad_data) {
                 if( $ad_data['slug'] == $ad ) {
@@ -84,16 +81,30 @@ class ERWP_Plugin {
                 return '';
             }
         }
-
         $ad_html = '';
-        if( $ad['status'] == 'active' ) {
-            if( $ad['implementation'] == 'js' ) {
-                $ad_html = self::$ad_markup_creator->create($ad['cu'], 'js');
+        $i = 0;
+        $cus = '';
+
+        while(true){
+            $array_key = 'cu'.$i;
+            if($i>0 && array_key_exists($array_key,$ad)){
+                $cus.= ',';
+            }
+            if(array_key_exists($array_key,$ad)){
+                $cus .= $ad[$array_key];
             } else {
-                $ad_html = self::$ad_markup_creator->create($ad['cu'], 'fif', $ad['height']);
+                break;
+            }
+            $i++;
+        }
+        if( $ad['status'] == 'Active' ) {
+            if( $ad['implementation'] == 'JS' ) {
+                $ad_html = self::$ad_markup_creator->create($cus, 'js');
+            } else {
+                $ad_html = self::$ad_markup_creator->create($cus, 'fif', $ad['height']);
             }
         }
-
+        _log($ad_html);
         if( $echo )
             echo $ad_html;
 

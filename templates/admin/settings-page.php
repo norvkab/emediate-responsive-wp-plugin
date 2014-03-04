@@ -70,31 +70,34 @@ if(!empty($_POST['emediate_options'])){
                                 }
                             ?>
                             <td>
-                                <strong>Implementation: </strong><select type="text" name="emediate_options[ads][<?php echo $i ?>][implementation]" value="<?= $opts['implementation']?>">
-                                    <option>
+                                <strong>Implementation: </strong>
+                                <select type="text" name="emediate_options[ads][<?php echo $i ?>][implementation]" ?>">
+                                    <option <? if($opts['implementation'] == 'FIF') echo 'selected = selected'; ?> value="FIF">
                                         FIF
                                     </option>
-                                    <option>
-                                        Script
+                                    <option <? if($opts['implementation'] == 'JS') echo 'selected = selected'; ?> value="JS">
+                                        JS
                                     </option>
                                 </select>
                             </td>
                             <td>
-                                <strong>Status: </strong><select type="text" name="emediate_options[ads][<?php echo $i ?>][status]" value="<?= $opts['status']?>">
-                                    <option>
+                                <strong>Status: </strong>
+                                <select type="text" name="emediate_options[ads][<?php echo $i ?>][status]" ">
+                                    <option <? if($opts['status'] == 'Active') echo 'selected = selected'; ?> value="Active">
                                         Active
                                     </option>
-                                    <option>
+                                    <option <? if($opts['status'] == 'Inactive') echo 'selected = selected'; ?> value="Inactive">
                                         Inactive
                                     </option>
                                 </select>
                             </td>
                             <td>
-                                <strong>Action: </strong><select type="text" name="emediate_options[ads][<?php echo $i ?>][action]" value="<?= $opts['action']?>">
-                                    <option>
+                                <strong>Action: </strong>
+                                <select type="text" name="emediate_options[ads][<?php echo $i ?>][action]"">
+                                    <option <? if($opts['action'] == 'Yes') echo 'selected = selected'; ?> value="Yes">
                                         Yes
                                     </option>
-                                    <option>
+                                    <option <? if($opts['action'] == 'No') echo 'selected = selected'; ?> value="No">
                                         No
                                     </option>
                                 </select>

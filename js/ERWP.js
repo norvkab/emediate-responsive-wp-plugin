@@ -64,7 +64,6 @@ var ERWP = (function($, window, erwpSettings) {
              * @param {jQuery} $elem
              */
             renderFifAd : function($elem) {
-
                 var cu, src,
                     height = $elem.attr('data-height') || 0,
                     width = $elem.attr('data-width') || 0;

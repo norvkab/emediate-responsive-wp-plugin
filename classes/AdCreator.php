@@ -34,8 +34,8 @@ class ERWP_AdCreator {
      * @param string $default_js_host Only used when creating js-ads
      * @param string $cu_param_name
      */
-    public function __construct($break_points=array(), $default_js_host='ad1.emediate.dk', $cu_param_name='cu')
-    {
+    public function __construct($break_points=array(), $default_js_host='ad1.emediate.dk', $cu_param_name='cu'){
+       // _log($break_points);
         $this->break_points = $break_points;
         $this->default_js_host = $default_js_host;
         $this->cu_param_name = $cu_param_name;
@@ -47,8 +47,7 @@ class ERWP_AdCreator {
      * @param int $height Default height of the ad, only used when using the fif implementation
      * @return string
      */
-    public function create($cu, $impl, $height=0)
-    {
+    public function create($cu, $impl, $height=0){
         $cu_nums = explode(',', $cu);
         if( $impl == 'js' ) {
             return $this->createComposedJSAd( current($cu_nums) );
@@ -61,8 +60,8 @@ class ERWP_AdCreator {
      * @param string|int $cu
      * @return string
      */
-    private function createComposedJSAd($cu)
-    {
+    private function createComposedJSAd($cu){
+        _log($cu);
         $src = sprintf('//%s/eas?%s=%s;cre=mu;js=y;target=_blank;', $this->default_js_host, $this->cu_param_name, trim($cu));
         return "<script>ERWP.composed('" . $src . "')</script>";
     }
@@ -72,8 +71,7 @@ class ERWP_AdCreator {
      * @param int $height
      * @return string
      */
-    private function createFifAd($cu_nums, $height)
-    {
+    private function createFifAd($cu_nums, $height){
         $attr = array(
             'id' => 'fif-ad-'.self::$ad_index,
             'class' => 'emediate-ad fif',
