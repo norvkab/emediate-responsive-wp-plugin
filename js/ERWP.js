@@ -69,7 +69,7 @@ var ERWP = (function($, window, erwpSettings) {
                     width = $elem.attr('data-width') || 0;
 
                 if( this.breakPoint ) {
-                    cu = $elem.attr('data-bp-'+this.breakPoint.min+'-'+this.breakPoint.max);
+                    cu = $elem.attr('data-bp-'+this.breakPoint.min_width+'-'+this.breakPoint.max_width);
                 }
                 if( !cu ) {
                     cu = $elem.attr('data-cu');
@@ -78,7 +78,9 @@ var ERWP = (function($, window, erwpSettings) {
                 if( !cu ) {
                     this.hideAd($elem); // Current break-point does not have an ad
                 }
+
                 else if( $elem.attr('data-current-cu') != cu ) {
+                    alert(cu);
 
                     // Restore ad element
                     $elem
@@ -108,7 +110,7 @@ var ERWP = (function($, window, erwpSettings) {
             getBreakPoint : function(windowWidth) {
                 var foundBreakPoint = false;
                 $.each(erwpSettings.breakPoints, function(i, breakPoint) {
-                    if( windowWidth >= breakPoint.min && windowWidth < breakPoint.max ) {
+                    if( windowWidth >= breakPoint.min_width && windowWidth < breakPoint.max_width ) {
                         foundBreakPoint = breakPoint;
                         return false;
                     }

@@ -48,7 +48,7 @@ class ERWP_Plugin {
         );
         // Hook into all ad-actions
         foreach(self::$opts['ads'] as $ad) {
-
+            _log($ad);
             if( $ad['action'] == 'Yes' ) {
                 add_action($ad['slug'], 'ERWP_Plugin::addActionHook');
             }

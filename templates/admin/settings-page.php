@@ -122,7 +122,39 @@ if(!empty($_POST['emediate_options'])){
         <input type="submit" class="button-primary" value="Spara" style="margin-top: 12px; margin-bottom: 5px">
         <div id="icon-options-general" class="icon32"><br/></div>
         <h2>General</h2>
+        <table>
+            <tr>
+               <td>
+                   <strong>Default_js_host: </strong>
+               </td>
+               <td>
+                   <input type="text" name="emediate_options[default_js_host]" value="<?= $emediate_opts['default_js_host']?>" />
+               </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Cu_param_name: </strong>
+                </td>
+                <td>
+                    <input type="text" name="emediate_options[cu_param_name]" value="<?= $emediate_opts['cu_param_name']?>" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Empty_ad_tags: </strong>
+                </td>
+                <td>
+                    <textarea type="text" name="emediate_options[empty_ad_tags]" ><?= $emediate_opts['empty_ad_tags']?></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" class="button-primary" value="Spara" style="margin-top: 12px; margin-bottom: 5px">
+                </td>
+                <td></td>
+            </tr>
 
+        </table>
 
     </form>
 </div>
