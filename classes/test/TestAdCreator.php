@@ -44,14 +44,14 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
 
         $ad_index = ERWP_AdCreator::currentAdIndex();
         $created_js = $creator->create(123, 'fif');
-        $expected_js = '<div id="fif-ad-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.'" data-height="0" data-cu="123"></div>'.
+        $expected_js = '<div id="emediate-fif-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.'" data-height="0" data-cu="123"></div>'.
                         PHP_EOL.'<script>ERWP.fif('.$ad_index.')</script>';
 
         $this->assertEquals($expected_js, $created_js);
 
         $ad_index = ERWP_AdCreator::currentAdIndex();
         $created_js = $creator->create('666,12,33', 'fif');
-        $expected_js = '<div id="fif-ad-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.'" data-height="0" data-cu="666"></div>'.
+        $expected_js = '<div id="emediate-fif-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.'" data-height="0" data-cu="666"></div>'.
                         PHP_EOL.'<script>ERWP.fif('.$ad_index.')</script>';
         $this->assertEquals($expected_js, $created_js);
     }
@@ -59,16 +59,16 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
     function testFifWithBreakPoints()
     {
         $bp = array(
-            array('min'=>0, 'max'=>400),
-            array('min'=>400, 'max'=>1200),
-            array('min'=>1200, 'max'=>5000),
+            array('min_width'=>0, 'max_width'=>400),
+            array('min_width'=>400, 'max_width'=>1200),
+            array('min_width'=>1200, 'max_width'=>5000),
         );
         $creator = new ERWP_AdCreator($bp);
 
         // Missing one cu at the end
         $ad_index = ERWP_AdCreator::currentAdIndex();
         $created_js = $creator->create('11,12', 'fif');
-        $expected_js = '<div id="fif-ad-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.
+        $expected_js = '<div id="emediate-fif-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.
                             '" data-height="0" data-bp-0-400="11" data-bp-400-1200="12" data-bp-1200-5000=""></div>'.
                         PHP_EOL.'<script>ERWP.fif('.$ad_index.')</script>';
 
@@ -77,7 +77,7 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
         // Missing one cu in the middle
         $ad_index = ERWP_AdCreator::currentAdIndex();
         $created_js = $creator->create('11,,12', 'fif');
-        $expected_js = '<div id="fif-ad-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.
+        $expected_js = '<div id="emediate-fif-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.
                             '" data-height="0" data-bp-0-400="11" data-bp-400-1200="" data-bp-1200-5000="12"></div>'.
                         PHP_EOL.'<script>ERWP.fif('.$ad_index.')</script>';
 
@@ -86,7 +86,7 @@ class TestAdCreator extends PHPUnit_Framework_TestCase {
         // Only one cu
         $ad_index = ERWP_AdCreator::currentAdIndex();
         $created_js = $creator->create('11', 'fif', 200);
-        $expected_js = '<div id="fif-ad-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.
+        $expected_js = '<div id="emediate-fif-'.$ad_index.'" class="emediate-ad fif" data-ad-index="'.$ad_index.
                             '" data-height="200" data-bp-0-400="11" data-bp-400-1200="" data-bp-1200-5000=""></div>'.
                             PHP_EOL.'<script>ERWP.fif('.$ad_index.')</script>';
 
