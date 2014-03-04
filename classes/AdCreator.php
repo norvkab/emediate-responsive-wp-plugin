@@ -73,7 +73,7 @@ class ERWP_AdCreator {
      */
     private function createFifAd($cu_nums, $height){
         $attr = array(
-            'id' => 'fif-ad-'.self::$ad_index,
+            'id' => 'emediate-fif-'.self::$ad_index,
             'class' => 'emediate-ad fif',
             'data-ad-index' => self::$ad_index,
             'data-height' => $height

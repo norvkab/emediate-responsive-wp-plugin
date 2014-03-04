@@ -80,7 +80,6 @@ var ERWP = (function($, window, erwpSettings) {
                 }
 
                 else if( $elem.attr('data-current-cu') != cu ) {
-                    alert(cu);
 
                     // Restore ad element
                     $elem
