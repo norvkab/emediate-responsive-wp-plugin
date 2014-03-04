@@ -8,6 +8,8 @@
  */
 class ERWP_Options {
 
+    const OPT_NAME = 'erwp_options';
+
     /**
      * @return array
      */
@@ -21,10 +23,10 @@ class ERWP_Options {
             'empty_ad_tags' => '',
             'ad_query' => ''
         );
-        $default_opts = apply_filters('erwp_options', $default_opts);
-        $options = array_merge($default_opts, get_option('erwp_options', array()));
+        $default_opts = apply_filters(self::OPT_NAME, $default_opts);
+        $options = array_merge($default_opts, get_option(self::OPT_NAME, array()));
         if( MULTISITE ) {
-            $options =  array_merge($options, get_site_option('erwp_options', array()));
+            $options =  array_merge($options, get_site_option(self::OPT_NAME, array()));
         }
         return $options;
     }
@@ -34,7 +36,15 @@ class ERWP_Options {
      */
     static function save($options)
     {
-        update_site_option('erwp_options', $options);
+        update_site_option(self::OPT_NAME, $options);
+    }
+
+    /**
+     * Removes all options saved to the database
+     */
+    static function clear()
+    {
+        delete_site_option(self::OPT_NAME);
     }
 
 }
