@@ -68,11 +68,7 @@ $(window)
     .on('erwpBreakPointChange', function(evt, newBreakPoint) {
         // We have entered a new break point
     })
-    .on('erwpAdHidden', function(evt, $fifAdElement, breakPoint) {
-        // apply a special class on ad containers containing an empty ad
-        $fifAdElement.parent().addClass('no-ad-here');
-    })
-    .on('erwpFifCreated', function(evt, adSrc, $fifAdElement, cu, breakPoint) {
+    .on('erwpAdCreated', function(evt, adSrc, $fifAdElement, cu, breakPoint) {
         // The iframe is rendered, soon there will be an ad here...
         // Lets remove the .no-ad-here class in case it was
         // added on previous break point
@@ -83,6 +79,10 @@ $(window)
         if( fifWin.body.innerHTML.indexOf('<!-- custom-no-ad-comment -->') > -1 ) {
             return false; // Hide the add
         }
+    })
+    .on('erwpAdHidden', function(evt, $fifAdElement, breakPoint) {
+        // apply a special class on ad containers containing an empty ad
+        $fifAdElement.parent().addClass('no-ad-here');
     });
 ```
 
