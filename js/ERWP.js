@@ -97,7 +97,7 @@ var ERWP = (function($, window, erwpSettings) {
                     iframe.EAS_src = src+";fif=y";
                     iframe.ERWP_fifIndex = $elem.attr('data-index');
 
-                    $win.trigger('erwpFifCreated', [src, $elem, cu, this.breakPoint]);
+                    $win.trigger('erwpAdCreated', [src, $elem, cu, this.breakPoint]);
                 }
             },
 
