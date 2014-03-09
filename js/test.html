@@ -33,7 +33,7 @@
             .on('erwpBreakPointChange', function(evt, breakPoint) {
                 console.log('Entered a new break point');
             })
-            .on('erwpFifCreated', function(evt, adSource, $adElem, cu, breakPoint) {
+            .on('erwpAdCreated', function(evt, adSource, $adElem, cu, breakPoint) {
                 console.log('Created ad '+$adElem.attr('data-index')+' with cu '+cu+' at break point '+JSON.stringify(breakPoint));
             });
     </script>
