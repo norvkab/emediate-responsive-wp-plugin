@@ -56,7 +56,7 @@ add_action('wp_head', function() { ?>
 `erwpBreakPointChange` — Called each time the client has entered a new break point. This happens when you change
 the size of the browser window or when you change orientation on a tablet.
 
-`erwpFifCreated` — This event is called every time an ad is created.
+`erwpAdCreated` — This event is called every time an ad is created.
 
 `erwpAdLoaded` — This event is called when an ad iframe has finished loading. If you return false from this callback the add will become hidden.
 
