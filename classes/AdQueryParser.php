@@ -39,33 +39,45 @@ class ERWP_AdQueryParser {
 
     /**
      * @example
-     *   $this->translate('post.post_name');
+     *   $this->translate('post.ID');
      *   $this->translate('site.name');
-     *   $this->translate('category.slug');
+     *   $this->translate('category.term_id|post.ID|"string val"');
      *
      * @param string $param
      * @return string
      */
     protected function translate($param) {
-        $chunks = explode('.', $param);
-        $translation = null;
 
-        if( count($chunks) == 2 ) {
-            if( $this->hasObjectProperty($chunks[0], $chunks[1]) ) {
-                // We're referring to an object
-                $translation = $this->objects[$chunks[0]]->$chunks[1];
-            } elseif( $chunks[0] == 'site' ) {
-                // We want blog info
-                $translation = get_bloginfo($chunks[1]);
+        foreach( explode('|', $param) as $query_param ) {
+            $translation = null;
+            $query_param = trim($query_param);
+            $chunks = explode('.', $query_param);
+
+            if( count($chunks) == 2 ) {
+                if( $this->hasObjectProperty($chunks[0], $chunks[1]) ) {
+                    // We're referring to an object
+                    $translation = $this->objects[$chunks[0]]->$chunks[1];
+                } elseif( $chunks[0] == 'site' ) {
+                    // We want blog info
+                    $translation = get_bloginfo($chunks[1]);
+                }
+            } elseif( isset($this->objects[$query_param]) ) {
+                $translation =  $this->objects[$query_param];
             }
-        } elseif( isset($this->objects[$param]) ) {
-            $translation =  $this->objects[$param];
+
+            if( $translation === null && strpos($query_param, '"') === 0) {
+                return str_replace('"', '', $query_param);
+            }
+            elseif( $translation !== null ) {
+                return $translation;
+            }
         }
-        if( $translation === null && $this->debug ) {
-            // Tell the dev that he's referring to an object that is undefined
-            trigger_error('PHP Warning: Ad query parameter "'.$param.'" does not exist', E_USER_WARNING);
-        }
-        return $translation;
+
+        // Tell the dev this couldn't be parsed
+        if( $this->debug )
+            trigger_error('PHP Warning: Ad query parameter "'.$param.'" could not be parsed into anything', E_USER_WARNING);
+
+        return null;
     }
 
     /**
@@ -88,7 +100,7 @@ class ERWP_AdQueryParser {
     public function parse($query_str) {
         $this->loadQueryObjects();
         $translations = array();
-        preg_match_all('/\%([a-z0-9A-Z\.\_]+)\%/', $query_str, $query_params);
+        preg_match_all('/\%([a-z0-9A-Z\.\_\-\|\"\+]+)\%/', $query_str, $query_params);
 
         if( empty($query_params) ) {
             return $query_str;
@@ -106,16 +118,15 @@ class ERWP_AdQueryParser {
      */
     private function loadQueryObjects() {
         if( $this->objects === null ) {
-
             $queried_obj = get_queried_object();
+
             $current_category = null;
             $this->objects = array('page_type' => 'unknown');
 
             if( is_singular() ) {
+
                 $this->objects['post'] = $queried_obj;
                 $this->objects['page_type'] = $queried_obj->post_type;
-                global $authordata;
-                $this->objects['author'] = $authordata;
                 $post_categories = wp_get_post_categories($queried_obj->ID);
                 if( !empty($post_categories) && is_array($post_categories) ) {
                     $current_category = get_category($post_categories[0]);

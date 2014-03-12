@@ -29,6 +29,38 @@ class TestAdQueryParser extends PHPUnit_Framework_TestCase {
         $this->assertEquals('kw=;test=2', $this->parser->parse('kw=%not_found%;test=2'));
     }
 
+    function testOrOperator() {
+        $this->assertEquals('kw=default-value;test=1', $this->parser->parse('kw=%not.found|"default-value"%;test=1'));
+        $this->assertEquals('kw=default+value;test=1', $this->parser->parse('kw=%special_var|"default+value"%;test=1'));
+        $this->assertEquals('kw='.get_bloginfo('name').';test=1', $this->parser->parse('kw=%special_var|category.slug|site.name%;test=1'));
+    }
+
+    function testOrOperatorWithCategory()
+    {
+        // this assumes you have at least one post in your wordpress database that has a category
+        query_posts(array('posts_per_page'=>10, 'post_type'=>'post', 'types'=>'post'));
+        while(have_posts()) {
+            the_post();
+            global $post, $wp_query;
+            if( $cats = wp_get_post_categories($post->ID) ) {
+
+                // Fool wordpress to believe we're visiting this page
+                $wp_query->queried_object = $post;
+                $wp_query->is_singular = true;
+
+                $category = get_category($cats[0]);
+                if( $category->category_parent ) {
+                    $category = get_category($category->category_parent);
+                }
+
+                $query = 'kw=%special.obj|category.term_id%;kw2=%special-obj|post.post_name|"default-value"%;test=1';
+                $expected = 'kw='.$category->term_id.';kw2='.$post->post_name.';test=1';
+                $this->assertEquals($expected, $this->parser->parse($query));
+                break;
+            }
+        }
+    }
+
     function testPost()
     {
         // this assumes you have at least one post in your wordpress database
@@ -51,27 +83,6 @@ class TestAdQueryParser extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $this->parser->parse($query));
     }
 
-    function testCategory()
-    {
-        // this assumes you have at least one post in your wordpress database that has a category
-        query_posts('posts_per_page=10');
-        while(have_posts()) {
-            the_post();
-            global $post, $wp_query;
-            if( $cats = wp_get_post_categories($post->ID) ) {
-                $wp_query->queried_object = $post;
-                $category = get_category($cats[0]);
-                if( $category->category_parent )
-                    $category = get_category($category->category_parent);
-
-                $query = 'kw=%category.term_id%;kw2=%post.post_name%;test=1';
-                $expected = 'kw='.$category->term_id.';kw2='.$post->post_name.';test=1';
-                $this->assertEquals($expected, $this->parser->parse($query));
-                break;
-            }
-        }
-    }
-
     function testLargeQuery()
     {
         // this assumes you have at least one post in your wordpress database
@@ -88,4 +99,31 @@ class TestAdQueryParser extends PHPUnit_Framework_TestCase {
             break;
         };
     }
+
+    function testCategory()
+    {
+        // this assumes you have at least one post in your wordpress database that has a category
+        query_posts(array('posts_per_page'=>10, 'post_type'=>'post', 'types'=>'post'));
+        while(have_posts()) {
+            the_post();
+            global $post, $wp_query;
+            if( $cats = wp_get_post_categories($post->ID) ) {
+
+                // Fool wordpress to believe we're visiting this page
+                $wp_query->queried_object = $post;
+                $wp_query->is_singular = true;
+
+                $category = get_category($cats[0]);
+                if( $category->category_parent ) {
+                    $category = get_category($category->category_parent);
+                }
+
+                $query = 'kw=%category.term_id%;kw2=%post.post_name%;test=1';
+                $expected = 'kw='.$category->term_id.';kw2='.$post->post_name.';test=1';
+                $this->assertEquals($expected, $this->parser->parse($query));
+                break;
+            }
+        }
+    }
+
 }
