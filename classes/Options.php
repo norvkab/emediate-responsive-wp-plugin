@@ -13,8 +13,7 @@ class ERWP_Options {
     /**
      * @return array
      */
-    static function load()
-    {
+    static function load() {
         $default_opts = array(
             'ads' => array(),
             'breakpoints' => array(),
@@ -34,16 +33,14 @@ class ERWP_Options {
     /**
      * @param array $options
      */
-    static function save($options)
-    {
+    static function save($options) {
         update_site_option(self::OPT_NAME, $options);
     }
 
     /**
      * Removes all options saved to the database
      */
-    static function clear()
-    {
+    static function clear() {
         delete_site_option(self::OPT_NAME);
     }
 

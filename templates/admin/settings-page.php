@@ -148,6 +148,14 @@ if(!empty($_POST['emediate_options'])){
             </tr>
             <tr>
                 <td>
+                    <strong>Ad_query: </strong>
+                </td>
+                <td>
+                    <textarea type="text" name="emediate_options[ad_query]" ><?php echo $emediate_opts['ad_query']?></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     <input type="submit" class="button-primary" value="Spara" style="margin-top: 12px; margin-bottom: 5px">
                 </td>
                 <td></td>

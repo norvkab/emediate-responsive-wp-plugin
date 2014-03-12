@@ -22,7 +22,7 @@ class ERWP_Plugin {
     /**
      * Should be called once before the page gets rendered
      */
-    public static function themeInit(){
+    public static function themeInit() {
         // Load our options
         self::$opts = ERWP_Options::load();
         self::$ad_markup_creator = new ERWP_AdCreator(
@@ -58,8 +58,7 @@ class ERWP_Plugin {
     /**
      * @param $action
      */
-    public static function addActionHook()
-    {
+    public static function addActionHook() {
         self::generateAdMarkup(current_filter());
     }
 
@@ -68,7 +67,7 @@ class ERWP_Plugin {
      * @param bool $echo
      * @return string
      */
-    public static function generateAdMarkup($ad, $echo = true){
+    public static function generateAdMarkup($ad, $echo = true) {
         if( !is_array($ad) ) {
             foreach(self::$opts['ads'] as $ad_data) {
                 if( $ad_data['slug'] == $ad ) {
@@ -81,30 +80,23 @@ class ERWP_Plugin {
                 return '';
             }
         }
-
         $ad_html = '';
-
         if( $ad['status'] == 'active' ) {
-
             $i = 0;
             $cus = array();
-
             // Collect cu's for each break point
             while( array_key_exists('cu'.$i, $ad) ) {
                 $cus[] = $ad['cu'.$i];
                 $i++;
             }
-
             if( !empty($ad['cu']) ) {
                 $cus[] = $ad['cu'];
             }
-
             $ad_html = self::$ad_markup_creator->create($cus, $ad['implementation'], isset($ad['height']) ? $ad['height']:0);
         }
-
-        if( $echo )
+        if( $echo ){
             echo $ad_html;
-
+        }
         return $ad_html;
     }
 }

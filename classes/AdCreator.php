@@ -34,7 +34,7 @@ class ERWP_AdCreator {
      * @param string $default_js_host Only used when creating js-ads
      * @param string $cu_param_name
      */
-    public function __construct($break_points=array(), $default_js_host='ad1.emediate.dk', $cu_param_name='cu'){
+    public function __construct($break_points=array(), $default_js_host='ad1.emediate.dk', $cu_param_name='cu') {
         $this->break_points = $break_points;
         $this->default_js_host = $default_js_host;
         $this->cu_param_name = $cu_param_name;
@@ -46,7 +46,8 @@ class ERWP_AdCreator {
      * @param int $height Default height of the ad, only used when using the fif implementation
      * @return string
      */
-    public function create($cu_nums, $impl, $height=0){
+    public function create($cu_nums, $impl, $height=0) {
+        _log("create");
         if( !is_array($cu_nums) )
             $cu_nums = explode(',', $cu_nums);
 
@@ -71,7 +72,7 @@ class ERWP_AdCreator {
      * @param int $height
      * @return string
      */
-    private function createFifAd($cu_nums, $height){
+    private function createFifAd($cu_nums, $height) {
         $attr = array(
             'id' => 'emediate-fif-'.self::$ad_index,
             'class' => 'emediate-ad fif',
@@ -91,18 +92,15 @@ class ERWP_AdCreator {
         foreach($attr as $name=>$val) {
             $div .= ' '.$name.'="'.$val.'"';
         }
-
         $div .= '></div>'.PHP_EOL.'<script>ERWP.fif('.self::$ad_index.')</script>';
         self::$ad_index++;
-
         return $div;
     }
 
     /**
      * @return int
      */
-    public static function currentAdIndex()
-    {
+    public static function currentAdIndex() {
         return self::$ad_index;
     }
 }
