@@ -20,7 +20,7 @@ class ERWP_AdQueryParser {
      * a property named "post" referring to an object having
      * the property "post_title"
      *
-     * @see ERWP_AdQueryParse::_log()
+     * @see ERWP_AdQueryParse::loadQueryObjects()
      * @var array
      */
     private $objects = null;
@@ -106,48 +106,64 @@ class ERWP_AdQueryParser {
      */
     private function loadQueryObjects() {
         if( $this->objects === null ) {
-            $this->objects = array('post' => get_queried_object());
-            if( !empty($this->objects['post']) ) {
-                if(is_category()){
-                    $post_categories = get_category_by_slug($this->objects['post']->slug);
-                    $cat_parents = get_category_parents($post_categories->cat_ID, false, '/' ,true);
+
+            $queried_obj = get_queried_object();
+            $current_category = null;
+            $this->objects = array('page_type' => 'unknown');
+
+            if( is_singular() ) {
+                $this->objects['post'] = $queried_obj;
+                $this->objects['page_type'] = $queried_obj->post_type;
+                global $authordata;
+                $this->objects['author'] = $authordata;
+                $post_categories = wp_get_post_categories($queried_obj->ID);
+                if( !empty($post_categories) && is_array($post_categories) ) {
+                    $current_category = get_category($post_categories[0]);
+                }
+                if( is_front_page() ) {
+                    $this->objects['page_type'] = 'frontpage';
+                }
+            }
+            elseif( is_category() ) {
+                $current_category = $queried_obj;
+                $this->objects['page_type'] = 'category';
+            }
+            elseif( is_tax() ) {
+                $this->objects['taxonomy'] = $queried_obj;
+                $this->objects['page_type'] = $queried_obj->taxonomy;
+            }
+            elseif( is_404() ) {
+                $this->objects['page_type'] = '404';
+            }
+            elseif( is_search() ) {
+                $this->objects['page_type'] = 'search';
+            }
+            elseif( is_date() ) {
+                $this->objects['page_type'] = 'date';
+            }
+            elseif( is_author() ) {
+                $this->objects['author'] = $queried_obj;
+                $this->objects['page_type'] = 'author';
+            }
+
+            // Add category and its parent (if we have one)
+            if( !empty($current_category) ) {
+                if( !empty($current_category->category_parent) ) {
+                    $cat_parents = get_category_parents($current_category->cat_ID, false, '/' ,true);
                     $cat_parents = explode('/',trim($cat_parents));
                     $cat_parents = array_filter($cat_parents);
-                    $cat_index = count($cat_parents);
-                    $this->objects['category'] = get_category_by_slug($cat_parents[$cat_index-3]);
-                    $this->objects['sub_category'] = get_category_by_slug($cat_parents[$cat_index-2]);
-                    $this->objects['sub_sub_category'] = get_category_by_slug($cat_parents[$cat_index-1]);
-                    unset($this->objects['post']);
-                }
-                if(is_singular()){
-                    $post_categories = wp_get_post_categories($this->objects['post']->ID);
-                    if( !empty($post_categories) && is_array($post_categories) ) {
-                        $cat = get_category($post_categories[0]);
-                        if( !empty($cat->category_parent) ) {
-                            $cat_parents = get_category_parents($cat->cat_ID, false, '/' ,true);
-                            $cat_parents = explode('/',trim($cat_parents));
-                            $cat_parents = array_filter($cat_parents);
-                            $cat_index = count($cat_parents);
-                            $this->objects['category'] = get_category_by_slug($cat_parents[$cat_index-3]);
-                            $this->objects['sub_category'] = get_category_by_slug($cat_parents[$cat_index-2]);
-                            $this->objects['sub_sub_category'] = get_category_by_slug($cat_parents[$cat_index-1]);
-
-                        } else {
-                            $this->objects['category'] = $cat;
-                        }
+                    $this->objects['category'] = get_category_by_slug($cat_parents[0]);
+                    $this->objects['sub_category'] = get_category_by_slug($cat_parents[1]);
+                    if( isset($cat_parents[2]) ) {
+                        $this->objects['sub_sub_category'] = get_category_by_slug($cat_parents[2]);
                     }
+                } else {
+                    $this->objects['category'] = $current_category;
                 }
-            } else {
-                if(is_search()){
-                    unset($this->objects['post']);
-                    $this->objects['special_page'] = 'search';
-                }
-                if(is_404()){
-                    unset($this->objects['post']);
-                    $this->objects['special_page'] = '404';
-                }
-                $this->objects = apply_filters('erwp_ad_query_objects', $this->objects);
             }
+
+            // Let theme and other plugins add stuff...
+            $this->objects = apply_filters('erwp_ad_query_objects', $this->objects);
         }
     }
 }
