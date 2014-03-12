@@ -47,7 +47,6 @@ class ERWP_AdCreator {
      * @return string
      */
     public function create($cu_nums, $impl, $height=0) {
-        _log("create");
         if( !is_array($cu_nums) )
             $cu_nums = explode(',', $cu_nums);
 
