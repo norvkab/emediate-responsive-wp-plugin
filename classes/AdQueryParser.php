@@ -114,9 +114,9 @@ class ERWP_AdQueryParser {
                     $cat_parents = explode('/',trim($cat_parents));
                     $cat_parents = array_filter($cat_parents);
                     $cat_index = count($cat_parents);
-                    $this->objects['category'] = get_category_by_slug($cat_parents[$cat_index-1]);
+                    $this->objects['category'] = get_category_by_slug($cat_parents[$cat_index-3]);
                     $this->objects['sub_category'] = get_category_by_slug($cat_parents[$cat_index-2]);
-                    $this->objects['sub_sub_category'] = get_category_by_slug($cat_parents[$cat_index-3]);
+                    $this->objects['sub_sub_category'] = get_category_by_slug($cat_parents[$cat_index-1]);
                     unset($this->objects['post']);
                 }
                 if(is_singular()){
@@ -128,9 +128,9 @@ class ERWP_AdQueryParser {
                             $cat_parents = explode('/',trim($cat_parents));
                             $cat_parents = array_filter($cat_parents);
                             $cat_index = count($cat_parents);
-                            $this->objects['category'] = get_category_by_slug($cat_parents[$cat_index-1]);
+                            $this->objects['category'] = get_category_by_slug($cat_parents[$cat_index-3]);
                             $this->objects['sub_category'] = get_category_by_slug($cat_parents[$cat_index-2]);
-                            $this->objects['sub_sub_category'] = get_category_by_slug($cat_parents[$cat_index-3]);
+                            $this->objects['sub_sub_category'] = get_category_by_slug($cat_parents[$cat_index-1]);
 
                         } else {
                             $this->objects['category'] = $cat;
