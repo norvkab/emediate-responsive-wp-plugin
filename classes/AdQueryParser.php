@@ -146,9 +146,6 @@ class ERWP_AdQueryParser {
                     unset($this->objects['post']);
                     $this->objects['special_page'] = '404';
                 }
-                _log("OBJECT");
-                _log($this->objects);
-                _log("AFTERBOJECT");
                 $this->objects = apply_filters('erwp_ad_query_objects', $this->objects);
             }
         }
