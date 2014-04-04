@@ -95,7 +95,7 @@ var ERWP = (function($, window, erwpSettings) {
                     // Here we use the undocumented EAS_create_iframe to get hold of the iframe document
                     var iframe = window.EAS_create_iframe($elem.get(0), width, height, erwpSettings.fifHtmlFile);
                     iframe.EAS_src = src+";fif=y";
-                    iframe.ERWP_fifIndex = $elem.attr('data-index');
+                    iframe.ERWP_fifIndex = $elem.attr('data-ad-index');
 
                     $win.trigger('erwpAdCreated', [src, $elem, cu, this.breakPoint]);
                 }
