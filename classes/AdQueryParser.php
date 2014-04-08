@@ -75,7 +75,7 @@ class ERWP_AdQueryParser {
 
         // Tell the dev this couldn't be parsed
         if( $this->debug )
-            trigger_error('PHP Warning: Ad query parameter "'.$param.'" could not be parsed into anything', E_USER_WARNING);
+            error_log('PHP Warning: Ad query parameter "'.$param.'" could not be parsed into anything', E_USER_WARNING);
 
         return null;
     }

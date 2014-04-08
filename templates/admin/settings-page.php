@@ -23,7 +23,6 @@ if(!empty($_POST['emediate_options'])){
                     foreach ($emediate_opts['breakpoints'] as $opts) {
                         ?>
                         <tr>
-
                             <td>
                                 <strong>Min-width: </strong><input type="text" name="emediate_options[breakpoints][<?php echo $i ?>][min_width]" value="<?php echo $opts['min_width']?>" />
                             </td>

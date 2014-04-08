@@ -46,7 +46,7 @@ var EmediateAdmin = new function(){
 
         var height = document.createElement('input');
         height.type='text';
-        height.name="emediate_options[ads]["+i+"][slug]";
+        height.name="emediate_options[ads]["+i+"][height]";
         height.placeholder = "Height";
         height.value = 0;
 
