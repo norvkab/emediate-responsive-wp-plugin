@@ -34,6 +34,9 @@ class ERWP_Plugin {
         $query_parser = new ERWP_AdQueryParser();
         wp_enqueue_script('emediate-eas', '//'.self::$opts['default_js_host'].'/EAS_tag.1.0.js', array(), '1.0');
         wp_enqueue_script('erwp-theme-js', ERWP_PLUGIN_URL.'/js/ERWP.js', array('jquery'), ERWP_PLUGIN_VERSION);
+
+        $disable_app = !apply_filters('emediate_app_location_method', false);
+
         wp_localize_script(
             'erwp-theme-js',
             'erwpSettings',
@@ -43,6 +46,11 @@ class ERWP_Plugin {
                 'defaultJSHost' => self::$opts['default_js_host'],
                 'cuParamName' => self::$opts['cu_param_name'],
                 'emptyAdTags' => self::$opts['empty_ad_tags'],
+                'enableLocationApp' => self::$opts['enable_location_app'],
+                'enableLocationBrowser' => apply_filters('emediatate_enable_browser_location', self::$opts['enable_location_browser']),
+                'locationQueryTitle' => $disable_app ? '' : self::$opts['location_query_title'],
+                'locationQueryText' => $disable_app ? '' : self::$opts['location_query_text'],
+                'appLocationMethod' => apply_filters('emediate_app_location_method', ''),
                 'fifHtmlFile' => ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host']
             )
         );

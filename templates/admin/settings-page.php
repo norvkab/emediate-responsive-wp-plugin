@@ -1,4 +1,4 @@
-<?
+<?php
 if(!empty($_POST['emediate_options'])){
     ERWP_Options::save(stripslashes_deep($_POST['emediate_options']));
     echo "<h1>Saved:".date("H:i:s")."</h1>";
@@ -11,7 +11,7 @@ if(!empty($_POST['emediate_options'])){
     <h2>Emediate Responsive Wordpress Plugin</h2>
 
     <form method="post" action="" >
-        <? $emediate_opts = ERWP_Options::load(); ?>
+        <?php $emediate_opts = ERWP_Options::load(); ?>
         <div id="icon-options-general" class="icon32"><br/></div>
         <h2>Breakpoints</h2>
         <div id="emediate_breakpoints">
@@ -34,7 +34,7 @@ if(!empty($_POST['emediate_options'])){
                             </td>
                             <br/>
                         </tr>
-                        <?
+                        <?php
                         $i++;
                     }
 
@@ -57,23 +57,23 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <strong>Slug: </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][slug]" value="<?php echo $opts['slug']?>" />
                             </td>
-                            <?
+                            <?php
                                 $cus= 0;
                                 while(count($emediate_opts['breakpoints']) > $cus){ ?>
                                     <td>
                                         <strong>CU-<?php echo$cus?> </strong><input type="text" name="emediate_options[ads][<?php echo $i ?>][cu<?php echo $cus ?>]" value="<?php echo isset($opts['cu'.$cus]) ? $opts['cu'.$cus] : ''?>" />
                                     </td>
 
-                               <?   $cus++;
+                               <?php   $cus++;
                                 }
                             ?>
                             <td>
                                 <strong>Implementation: </strong>
                                 <select type="text" name="emediate_options[ads][<?php echo $i ?>][implementation]" ?>">
-                                    <option <? if($opts['implementation'] == 'fif') echo 'selected = selected'; ?> value="fif">
+                                    <option <?php if($opts['implementation'] == 'fif') echo 'selected = selected'; ?> value="fif">
                                         FIF
                                     </option>
-                                    <option <? if($opts['implementation'] == 'js') echo 'selected = selected'; ?> value="js">
+                                    <option <?php if($opts['implementation'] == 'js') echo 'selected = selected'; ?> value="js">
                                         JS
                                     </option>
                                 </select>
@@ -81,10 +81,10 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <strong>Status: </strong>
                                 <select type="text" name="emediate_options[ads][<?php echo $i ?>][status]" ">
-                                    <option <? if( empty($opts['status']) || $opts['status'] != 'inactive' ) echo 'selected = selected'; ?> value="active">
+                                    <option <?php if( empty($opts['status']) || $opts['status'] != 'inactive' ) echo 'selected = selected'; ?> value="active">
                                         Active
                                     </option>
-                                    <option <? if( !empty($opts['status']) && $opts['status'] == 'inactive' ) echo 'selected = selected'; ?> value="inactive">
+                                    <option <?php if( !empty($opts['status']) && $opts['status'] == 'inactive' ) echo 'selected = selected'; ?> value="inactive">
                                         Inactive
                                     </option>
                                 </select>
@@ -92,10 +92,10 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <strong>Action: </strong>
                                 <select type="text" name="emediate_options[ads][<?php echo $i ?>][action]"">
-                                    <option <? if( !empty($opts['action']) ) echo 'selected = selected'; ?> value="yes">
+                                    <option <?php if( !empty($opts['action']) ) echo 'selected = selected'; ?> value="yes">
                                         Yes
                                     </option>
-                                    <option <? if( empty($opts['action']) ) echo 'selected = selected'; ?> value="">
+                                    <option <?php if( empty($opts['action']) ) echo 'selected = selected'; ?> value="">
                                         No
                                     </option>
                                 </select>
@@ -108,7 +108,7 @@ if(!empty($_POST['emediate_options'])){
                             </td>
                             <br/>
                         </tr>
-                        <?
+                        <?php
                         $i++;
                     }
                 }
@@ -153,6 +153,47 @@ if(!empty($_POST['emediate_options'])){
                     <textarea type="text" name="emediate_options[ad_query]" ><?php echo $emediate_opts['ad_query']?></textarea>
                 </td>
             </tr>
+            <tr>
+                <td>
+                    <strong>Activate geolocation for browser: </strong>
+                </td>
+                <td>
+                    <select name="emediate_options[enable_location_browser]">
+                        <option value="0">No</option>
+                        <option value="1" <?php if ($emediate_opts['enable_location_browser']) echo 'selected="selected"'; ?>>Yes</option>
+                    </select>
+                </td>
+            </tr>
+           <?php if (!empty($emediate_opts['show_app_options'])): ?>
+           <tr>
+                <td>
+                    <strong>Activate geolocation for app: </strong>
+                </td>
+                <td>
+                    <select name="emediate_options[enable_location_app]">
+                        <option value="0">No</option>
+                        <option value="1" <?php if ($emediate_opts['enable_location_app']) echo 'selected="selected"'; ?>>Yes</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <strong>Location query title for app: </strong>
+                </td>
+                <td>
+                    <textarea type="text" name="emediate_options[location_query_title]" ><?php echo $emediate_opts['location_query_title']?></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Location query text for app: </strong>
+                </td>
+                <td>
+                    <textarea type="text" name="emediate_options[location_query_text]" ><?php echo $emediate_opts['location_query_text']?></textarea>
+                </td>
+            </tr>
+            <?php endif; ?>
             <tr>
                 <td>
                     <input type="submit" class="button-primary" value="Spara" style="margin-top: 12px; margin-bottom: 5px">
