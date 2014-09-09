@@ -51,6 +51,94 @@ add_action('wp_head', function() { ?>
 <?php });
 ```
 
+### Geolocation
+
+Geolocation is possible both via browser API, or via a native app-wrapper.
+Options for native app-wrapper is disabled by default, and can be enabled by the
+following filters:
+
+```php
+// method to show emediate options for mobile app in admin
+add_filter('emediate_app_show_options', '__return_true');
+
+// javascript-method to return position from app
+add_filter('emediate_app_location_method', function() {
+    return 'window._nativeAppQueryLocation';
+});
+```
+
+Example of a javascript-implementation with asynchronous location function:
+```js
+
+var interval = null;
+var hasStartedGPS = false;
+var cachedCoords = null;
+
+var callbacks = [];
+
+// wait for gps lock, try to fetch multiple times
+var queryLocation = function(title, message, callback) {
+
+    var resetGPS = function() {
+        callbacks = []; // clear memory
+        if (interval) {
+            clearInterval(interval);
+            interval = false;
+        }
+        if (hasStartedGPS) {
+            nativeapp.stopGeoLocating();
+            hasStartedGPS = false;
+        }
+    };
+
+    if (cachedCoords) {
+        return callback(cachedCoords);
+    } else if (interval === false) {  // timeout
+        return resetGPS();
+    }
+
+    callbacks.push(callback);
+
+    if (interval === null) {
+
+        if (!hasStartedGPS) {
+            nativeapp.startGeoLocating(title, message);
+            hasStartedGPS = true;
+        }
+        interval = setInterval(function() {
+            try {
+                var coords = nativeapp.getGeoLocation();
+                coords = $.parseJSON(coords);
+            } catch (e) { return; }
+
+            if (coords && coords.latitude) {
+                cachedCoords = coords;
+                for (var i = 0; i < callbacks.length; i++) {
+                    callbacks[i](coords);
+                }
+
+                resetGPS();
+            }
+        }, 300);
+
+        setTimeout(function() {
+            resetGPS();
+        }, 5000);
+    }
+}
+
+window._nativeAppQueryLocation = queryLocation;
+```
+
+To override disable browser geolocation (e.g. on desktop site), use filter `emediatate_enable_browser_location`:
+```php
+// override option to always disable geolocation on desktop site
+add_filter('emediatate_enable_browser_location', function($enabled) {
+    if (WP_IS_MOBILE) return $enabled;
+    return false;
+});
+```
+
 ### Javascript events
 
 `erwpBreakPointChange` — Called each time the client has entered a new break point. This happens when you change

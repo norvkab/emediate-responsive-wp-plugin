@@ -55,15 +55,140 @@ var ERWP = (function($, window, erwpSettings) {
                     this.$fifAds[fifIndex] = $elem;
                 }
 
-                // render ad
-                this.renderFifAd($elem);
+                var self = this;
+
+                var getLocation = null;
+                var timeout = 5000;
+
+                var normal_render = function() {
+                    timeout = null;
+                    self.renderFifAd($elem);
+                }
+
+                // normal browser api
+                var browserEnable = erwpSettings.enableLocationBrowser;
+
+                var ua = window.navigator.userAgent;
+                if (ua.match(/android/i)) {
+                    browserEnable = erwpSettings.enableLocationAndroid;
+                }
+                else if (ua.match(/iphone/i) || ua.match(/ipad/i) || ua.match(/ipod/i) || ua.match(/iOS/)) {
+                    browserEnable = erwpSettings.enableLocationiOS;
+                }
+
+                var appLocationMethod = null;
+                // get method to fetch location from app wrapper (if possible)
+                // should return a function with arguments (questionTitle, questionMessage, callback)
+                // if set
+                try {
+                    if (!erwpSettings.appLocationMethod) {
+                        appLocationMethod = null;
+                    }
+                    else if ($.type(erwpSettings.appLocationMethod) == 'string') {
+                        appLocationMethod = eval(erwpSettings.appLocationMethod);
+                    }
+                    else if ($.isFunction(erwpSettings.appLocationMethod)) {
+                        appLocationMethod = erwpSettings.appLocationMethod;
+                    }
+                } catch (e) {
+                    if (window.console && window.console.log) window.console.log('Error getting app location method. Fallback to browser <mode></mode>. ' + e.toString());
+                }
+
+                // cached
+                if (erwpSettings.coords) {
+                    getLocation = function(callback) {
+                        callback(erwpSettings.coords);
+                    }
+                }
+                else if (appLocationMethod) {
+                    if (erwpSettings.enableLocationApp) {
+                        getLocation = function(callback) {
+                            appLocationMethod(erwpSettings.locationQueryTitle, erwpSettings.locationQueryText, callback);
+                        }
+                    }
+
+                }
+                else if (browserEnable && navigator.geolocation) {
+
+                    getLocation = function(callback) {
+
+                        var opts = {
+                            enableHighAccuracy: true
+                        };
+
+                        var _success = function(p) {
+                            //for mozilla geode,it returns the coordinates slightly differently
+                            var params;
+                            if(typeof(p.latitude)===undefined) {
+                                params = {
+                                    timestamp: p.timestamp,
+                                    coords: {
+                                        latitude:  p.latitude,
+                                        longitude: p.longitude
+                                    }
+                                };
+                            } else {
+                                params = p;
+                            }
+
+                            if (timeout !== null) {
+                                callback(params.coords);
+                            } else {
+                                normal_render();
+                            }
+                        }
+
+                        var _error = function(e) {
+                            $(window).trigger('geolocation_failed', e.code);
+                            normal_render();
+                        }
+
+                        navigator.geolocation.getCurrentPosition(_success, normal_render, opts);
+                    }
+
+                }
+
+                // Only query for jQuery element filter
+                if (erwpSettings.locationjQueryFilter) {
+                    try {
+                        if (!$elem.is(erwpSettings.locationjQueryFilter)) {
+                            getLocation = null;
+                        }
+                    } catch (e) {}
+                }
+
+                if (getLocation) {
+                    getLocation(function(loc) {
+                        if (timeout == null) return;
+                        timeout = null;
+
+                        if (!loc.latitude) {
+                            normal_render();
+                            return;
+                        }
+                        if (!erwpSettings.coords) {
+                            $(window).trigger('geolocation_found');
+                        }
+                        erwpSettings.coords = loc.coords;
+                        self.renderFifAd($elem, ';lat='+loc.latitude+';lon='+loc.longitude+';');
+                    });
+
+                    setTimeout(function() {
+                        if (timeout !== null) {
+                            timeout = null
+                            normal_render();
+                        }
+                    }, timeout);
+
+                }
+                else normal_render();
             },
 
             /**
              * Inserts a fif-ad in given element
              * @param {jQuery} $elem
              */
-            renderFifAd : function($elem) {
+            renderFifAd : function($elem, extraQuery) {
                 var cu, src,
                     height = $elem.attr('data-height') || 0,
                     width = $elem.attr('data-width') || 0;
@@ -88,7 +213,7 @@ var ERWP = (function($, window, erwpSettings) {
                         .html('');
 
                     src = '//'+erwpSettings.defaultJSHost+'/eas?cre=mu;js=y;target=_blank;'+erwpSettings.cuParamName+'='+cu+
-                        ';'+erwpSettings.adQuery;
+                        ';'+erwpSettings.adQuery+extraQuery;
 
                     // Load fif
                     // window.EAS_load_fif('emediate-fif-'+$elem.attr('data-index'), erwpSettings.fifHtmlFile, src, width, height);
@@ -121,8 +246,16 @@ var ERWP = (function($, window, erwpSettings) {
              * Iterate through all fif-ad elements and re-insert fif-ad
              */
             reloadFiFAds : function() {
+                var extraArgs = '';
+
+                // add location params if cached
+                if (erwpSettings.coords && erwpSettings.coords.latitude) {
+                    var loc = erwpSettings.coords;
+                    extraArgs = ';lat='+loc.latitude+';lon='+loc.longitude+';';
+                }
+
                 $.each(this.$fifAds, function(i, $adElem) {
-                    ERWP.renderFifAd($adElem);
+                    ERWP.renderFifAd($adElem, extraArgs);
                 });
             },
 
