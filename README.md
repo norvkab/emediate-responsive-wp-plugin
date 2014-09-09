@@ -3,7 +3,11 @@ emediate-responsive-wp-plugin
 
 *Collaboration between Norran, VK and Aftonbladet.*
 
-### Admin page
+**Table of contents**
+
+- [Getting started](#getting-started)
+
+### Getting started
 
 This section of the documentation will go through how you setup the plugin using the settings page in wp-admin
 
