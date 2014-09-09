@@ -53,7 +53,7 @@ class ERWP_Plugin {
 
         $query_parser = new ERWP_AdQueryParser();
 
-        $script = '<script type="text/javascript">var erwpSettings = ';
+        $script = '<script type="text/javascript">/* <![CDATA[ */ '.PHP_EOL.'var erwpSettings = ';
 
         $script .= json_encode(array(
                 'breakPoints' => self::$opts['breakpoints'],
@@ -72,7 +72,7 @@ class ERWP_Plugin {
                 'fifHtmlFile' => ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host']
             ));
 
-        $script .= '; </script>';
+        $script .= '; '.PHP_EOL.'/* ]]> */</script>';
         echo $script;
     }
 
