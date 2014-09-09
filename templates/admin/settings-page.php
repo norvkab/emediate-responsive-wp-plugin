@@ -221,7 +221,7 @@ if(!empty($_POST['emediate_options'])){
                     <strong>Only activate for elements matching jQuery.is():</strong>
                 </td>
                 <td>
-                    <textarea onchange="try { jQuery(window).is($(this).value()) } catch (e) alert('Invalid query!') ?>" type="text" name="emediate_options[location_jquery_filter]" ><?php echo $emediate_opts['location_jquery_filter']?></textarea>
+                    <textarea onchange="try { jQuery(window).is($(this).value()) } catch (e) { alert('Invalid query!') } ?>" type="text" name="emediate_options[location_jquery_filter]" ><?php echo $emediate_opts['location_jquery_filter']?></textarea>
                 </td>
             </tr>
 
