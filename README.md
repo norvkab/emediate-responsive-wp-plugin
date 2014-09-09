@@ -6,6 +6,11 @@ emediate-responsive-wp-plugin
 **Table of contents**
 
 - [Getting started](#getting-started)
+- [Creating ads programmatically](#Creating ads programmatically)
+- [Ad server requests](#Ad-server-requests)
+- [Geolocation](#geolocation)
+- [Javascript events](#Javascript-events)
+
 
 ### Getting started
 
@@ -57,6 +62,7 @@ add_action('wp_head', function() { ?>
 
 ### Geolocation
 
+By enabling the geolocating features of this plugin the coordinates of your visitors will be sent to the ad server. This makes it  possible to target ads only to be displayed when the visitor is residing at certain locations.
 Geolocation is possible both via browser API, or via a native app-wrapper.
 Options for native app-wrapper is disabled by default, and can be enabled by the
 following filters:
