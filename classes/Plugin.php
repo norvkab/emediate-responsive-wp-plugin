@@ -30,33 +30,13 @@ class ERWP_Plugin {
                                     self::$opts['default_js_host'],
                                     self::$opts['cu_param_name']
                                 );
+
+        add_action('wp_print_scripts', array('ERWP_Plugin', 'scriptParams'));
+
         // Add emediate and erwp javascript
-        $query_parser = new ERWP_AdQueryParser();
         wp_enqueue_script('emediate-eas', '//'.self::$opts['default_js_host'].'/EAS_tag.1.0.js', array(), '1.0');
         wp_enqueue_script('erwp-theme-js', ERWP_PLUGIN_URL.'/js/ERWP.js', array('jquery'), ERWP_PLUGIN_VERSION);
 
-        $disable_app = !apply_filters('emediate_app_location_method', false);
-
-        wp_localize_script(
-            'erwp-theme-js',
-            'erwpSettings',
-            array(
-                'breakPoints' => self::$opts['breakpoints'],
-                'adQuery' => $query_parser->parse(self::$opts['ad_query']),
-                'defaultJSHost' => self::$opts['default_js_host'],
-                'cuParamName' => self::$opts['cu_param_name'],
-                'emptyAdTags' => self::$opts['empty_ad_tags'],
-                'enableLocationApp' => self::$opts['enable_location_app'],
-                'enableLocationBrowser' => apply_filters('emediatate_enable_browser_location', self::$opts['enable_location_browser']),
-                'enableLocationAndroid' => self::$opts['enable_location_android'],
-                'enableLocationiOS' => self::$opts['enable_location_ios'],
-                'locationQueryTitle' => $disable_app ? '' : self::$opts['location_query_title'],
-                'locationQueryText' => $disable_app ? '' : self::$opts['location_query_text'],
-                'locationjQueryFilter' => self::$opts['location_jquery_filter'],
-                'appLocationMethod' => apply_filters('emediate_app_location_method', ''),
-                'fifHtmlFile' => ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host']
-            )
-        );
 
         // Hook into all ad-actions
         foreach(self::$opts['ads'] as $ad) {
@@ -64,6 +44,36 @@ class ERWP_Plugin {
                 add_action($ad['slug'], 'ERWP_Plugin::addActionHook');
             }
         }
+    }
+
+    public static function scriptParams() {
+
+        $disable_app = !apply_filters('emediate_app_location_method', false);
+
+
+        $query_parser = new ERWP_AdQueryParser();
+
+        $script = '<script type="text/javascript">var erwpSettings = ';
+
+        $script .= json_encode(array(
+                'breakPoints' => self::$opts['breakpoints'],
+                'adQuery' => $query_parser->parse(self::$opts['ad_query']),
+                'defaultJSHost' => self::$opts['default_js_host'],
+                'cuParamName' => self::$opts['cu_param_name'],
+                'emptyAdTags' => self::$opts['empty_ad_tags'],
+                'enableLocationApp' => (bool)self::$opts['enable_location_app'],
+                'enableLocationBrowser' => (bool)apply_filters('emediatate_enable_browser_location', self::$opts['enable_location_browser']),
+                'enableLocationAndroid' => (bool)self::$opts['enable_location_android'],
+                'enableLocationiOS' => (bool)self::$opts['enable_location_ios'],
+                'locationQueryTitle' => $disable_app ? '' : self::$opts['location_query_title'],
+                'locationQueryText' => $disable_app ? '' : self::$opts['location_query_text'],
+                'locationjQueryFilter' => self::$opts['location_jquery_filter'],
+                'appLocationMethod' => apply_filters('emediate_app_location_method', ''),
+                'fifHtmlFile' => ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host']
+            ));
+
+        $script .= '; </script>';
+        echo $script;
     }
 
     /**
