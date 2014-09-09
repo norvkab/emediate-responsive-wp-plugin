@@ -50,10 +50,8 @@ var ERWP = (function($, window, erwpSettings) {
                 var $elem = $('#emediate-fif-'+fifIndex);
 
                 // Collect this ad element for later (when ad needs
-                // to be reloaded due to rotation change for example)
-                if( this.hasRegisteredBreakPoints ) {
-                    this.$fifAds[fifIndex] = $elem;
-                }
+                // to be reloaded due to changed break point for example)
+                this.$fifAds[fifIndex] = $elem;
 
                 var self = this;
 
