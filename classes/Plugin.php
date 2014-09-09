@@ -48,8 +48,11 @@ class ERWP_Plugin {
                 'emptyAdTags' => self::$opts['empty_ad_tags'],
                 'enableLocationApp' => self::$opts['enable_location_app'],
                 'enableLocationBrowser' => apply_filters('emediatate_enable_browser_location', self::$opts['enable_location_browser']),
+                'enableLocationAndroid' => self::$opts['enable_location_android'],
+                'enableLocationiOS' => self::$opts['enable_location_ios'],
                 'locationQueryTitle' => $disable_app ? '' : self::$opts['location_query_title'],
                 'locationQueryText' => $disable_app ? '' : self::$opts['location_query_text'],
+                'locationjQueryFilter' => self::$opts['location_jquery_filter'],
                 'appLocationMethod' => apply_filters('emediate_app_location_method', ''),
                 'fifHtmlFile' => ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host']
             )

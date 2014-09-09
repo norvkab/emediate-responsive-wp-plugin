@@ -164,10 +164,32 @@ if(!empty($_POST['emediate_options'])){
                     </select>
                 </td>
             </tr>
+              <tr>
+                <td>
+                    <strong>Activate geolocation for iOS browser: </strong>
+                </td>
+                <td>
+                    <select name="emediate_options[enable_location_ios]">
+                        <option value="0">No</option>
+                        <option value="1" <?php if ($emediate_opts['enable_location_ios']) echo 'selected="selected"'; ?>>Yes</option>
+                    </select>
+                </td>
+            </tr>
+               <tr>
+                <td>
+                    <strong>Activate geolocation for Android browser: </strong>
+                </td>
+                <td>
+                    <select name="emediate_options[enable_location_android]">
+                        <option value="0">No</option>
+                        <option value="1" <?php if ($emediate_opts['enable_location_android']) echo 'selected="selected"'; ?>>Yes</option>
+                    </select>
+                </td>
+            </tr>
            <?php if (!empty($emediate_opts['show_app_options'])): ?>
            <tr>
                 <td>
-                    <strong>Activate geolocation for app: </strong>
+                    <strong>Activate geolocation for app: (overrides browser settings if available)</strong>
                 </td>
                 <td>
                     <select name="emediate_options[enable_location_app]">
@@ -193,7 +215,16 @@ if(!empty($_POST['emediate_options'])){
                     <textarea type="text" name="emediate_options[location_query_text]" ><?php echo $emediate_opts['location_query_text']?></textarea>
                 </td>
             </tr>
-            <?php endif; ?>
+            <?php endif; // show app settings?>
+            <tr>
+                <td>
+                    <strong>Only activate for elements matching jQuery.is():</strong>
+                </td>
+                <td>
+                    <textarea onchange="try { jQuery(window).is($(this).value()) } catch (e) alert('Invalid query!') ?>" type="text" name="emediate_options[location_jquery_filter]" ><?php echo $emediate_opts['location_jquery_filter']?></textarea>
+                </td>
+            </tr>
+
             <tr>
                 <td>
                     <input type="submit" class="button-primary" value="Spara" style="margin-top: 12px; margin-bottom: 5px">

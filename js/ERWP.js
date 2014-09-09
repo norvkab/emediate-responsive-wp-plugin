@@ -64,6 +64,18 @@ var ERWP = (function($, window, erwpSettings) {
                     timeout = null;
                     self.renderFifAd($elem);
                 }
+
+                // normal browser api
+                var browserEnable = erwpSettings.enableLocationBrowser;
+
+                var ua = window.navigator.userAgent;
+                if (ua.match(/android/i)) {
+                    browserEnable = erwpSettings.enableLocationAndroid;
+                }
+                else if (ua.match(/iphone/i) || ua.match(/ipad/i) || ua.match(/ipod/i) || ua.match(/iOS/)) {
+                    browserEnable = erwpSettings.enableLocationiOS;
+                }
+
                 var appLocationMethod = null;
                 // get method to fetch location from app wrapper (if possible)
                 // should return a function with arguments (questionTitle, questionMessage, callback)
@@ -96,7 +108,7 @@ var ERWP = (function($, window, erwpSettings) {
                     }
 
                 }
-                else if (erwpSettings.enableLocationBrowser && navigator.geolocation) {
+                else if (browserEnable && navigator.geolocation) {
 
                     getLocation = function(callback) {
 
@@ -126,9 +138,23 @@ var ERWP = (function($, window, erwpSettings) {
                             }
                         }
 
+                        var _error = function(e) {
+                            $(window).trigger('geolocation_failed', e.code);
+                            normal_render();
+                        }
+
                         navigator.geolocation.getCurrentPosition(_success, normal_render, opts);
                     }
 
+                }
+
+                // Only query for jQuery element filter
+                if (erwpSettings.locationjQueryFilter) {
+                    try {
+                        if (!$elem.is(erwpSettings.locationjQueryFilter)) {
+                            getLocation = null;
+                        }
+                    } catch (e) {}
                 }
 
                 if (getLocation) {
@@ -139,6 +165,9 @@ var ERWP = (function($, window, erwpSettings) {
                         if (!loc.latitude) {
                             normal_render();
                             return;
+                        }
+                        if (!erwpSettings.coords) {
+                            $(window).trigger('geolocation_found');
                         }
                         erwpSettings.coords = loc.coords;
                         self.renderFifAd($elem, ';lat='+loc.latitude+';lon='+loc.longitude+';');
