@@ -9,6 +9,9 @@
  */
 class ERWP_AdCreator {
 
+    const IMPL_COMPOSED = 'composed';
+    const IMPL_FIF = 'fif';
+
     /**
      * @var array
      */
@@ -42,7 +45,7 @@ class ERWP_AdCreator {
 
     /**
      * @param string|int|array $cu_nums Either one cu number/key or comma separated list with cu numbers/keys
-     * @param string $impl Either 'js' or 'fif'
+     * @param string $impl Either 'composed' or 'fif' (ERWP_AdCreator::IMPL_COMPOSED, ERWP_AdCreator::IMPL_FIF)
      * @param int $height Default height of the ad, only used when using the fif implementation
      * @return string
      */
@@ -50,7 +53,10 @@ class ERWP_AdCreator {
         if( !is_array($cu_nums) )
             $cu_nums = explode(',', $cu_nums);
 
-        if( $impl == 'js' ) {
+        if( $impl == 'js' || $impl == self::IMPL_COMPOSED ) { // js is deprecated
+            if( $impl == 'js' && WP_DEBUG ) {
+                trigger_error('ERWP_AdCreator::create does not accept js as argument, use composed or fif', E_USER_DEPRECATED);
+            }
             return $this->createComposedJSAd( current($cu_nums) );
         } else {
             return $this->createFifAd($cu_nums, $height);
@@ -99,7 +105,18 @@ class ERWP_AdCreator {
     /**
      * @return int
      */
-    public static function currentAdIndex() {
+    public static function getAdIndex() {
         return self::$ad_index;
+    }
+
+    public static function currentAdIndex() {
+        return self::getAdIndex(); // back compat
+    }
+
+    /**
+     * @param int $index
+     */
+    public static function setAdIndex($index) {
+        self::$ad_index = $index;
     }
 }

@@ -36,7 +36,7 @@ $break_points = array();
 $js_host = 'ad1.emediate.dk';
 $cu_param_name = 'cu';
 $cu = 1283;
-$impl = 'fif'; // either 'js' or 'fif'
+$impl = ERWP_AdCreator::IMPL_FIF; // either ERWP_AdCreator::IMPL_FIF or ERWP_AdCreator::IMPL_COMPOSED
 $ad_height = 320;
 
 $ad_creator = new ERWP_AdCreator($break_points, $js_host, $cu_param_name);
