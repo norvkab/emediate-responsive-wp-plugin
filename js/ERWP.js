@@ -282,17 +282,22 @@ var ERWP = (function($, window, erwpSettings) {
              * @param {Window} iframeWin
              */
             fifLoaded : function(iframeWin) {
-                var $adElem = this.getAdElementFromFifIframe(iframeWin),
-                    _this = this;
+                var $adElem = this.getAdElementFromFifIframe(iframeWin);
 
                 if( this.shouldHideFif(iframeWin, $adElem) ) {
                     this.hideAd($adElem);
                 } else {
                     $adElem.addClass('has-ad');
                     this.resizeIframeToDocumentSize($adElem);
-                    setTimeout(function() {
-                        _this.resizeIframeToDocumentSize($adElem);
-                    }, 500);
+
+                    var count = 0,
+                        _this = this,
+                        interval = setInterval(function() {
+                            _this.resizeIframeToDocumentSize($adElem);
+                            count += 1;
+                            if (count > 4)
+                                clearInterval(interval);
+                        }, 500);
                 }
             },
 
@@ -324,15 +329,19 @@ var ERWP = (function($, window, erwpSettings) {
 
             /**
              * @param {jQuery} $adElem
+             * @return {Boolean}
              */
             resizeIframeToDocumentSize : function($adElem) {
                 var $iframe = $adElem.find('iframe'),
                     iframeHeight = $iframe.height(),
-                    iframeDocHeight = $iframe.contents().outerHeight();
+                    iframeDocHeight = $iframe.contents().find('body').outerHeight();
 
                 if( iframeDocHeight != iframeHeight ) {
                     $iframe.height(iframeDocHeight);
+                    $adElem.height(iframeDocHeight);
+                    return true;
                 }
+                return false;
             },
 
             /**
