@@ -50,7 +50,7 @@ var ERWP = (function($, window, erwpSettings) {
 
                 document.write(
                     '<script src="'+src+';'+erwpSettings.adQuery+'"></script>'+
-                    '<noscript><a target="_blank" data-test="click" href="'+clickURL+'">'+
+                    '<noscript><a target="_blank" href="'+clickURL+'">'+
                         '<img src="'+src+';cre=img" alt="emediate" /></a></noscript>'
                 );
 
