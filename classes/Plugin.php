@@ -68,6 +68,7 @@ class ERWP_Plugin {
                 'locationQueryTitle' => $disable_app ? '' : self::$opts['location_query_title'],
                 'locationQueryText' => $disable_app ? '' : self::$opts['location_query_text'],
                 'locationjQueryFilter' => self::$opts['location_jquery_filter'],
+                'debug' => ERWP_DEBUG,
                 'appLocationMethod' => apply_filters('emediate_app_location_method', ''),
                 'fifHtmlFile' => ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host']
             ));
