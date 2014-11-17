@@ -5,19 +5,11 @@ emediate-responsive-wp-plugin
 
 **Table of contents**
 
-- [Getting started](#getting-started)
-- [Creating ads programmatically](#Creating ads programmatically)
-- [Ad server requests](#Ad-server-requests)
+- [Creating ads programmatically](#creating ads programmatically)
+- [Ad server requests](#ad-server-requests)
 - [Geolocation](#geolocation)
-- [Javascript events](#Javascript-events)
-
-
-### Getting started
-
-This section of the documentation will go through how you setup the plugin using the settings page in wp-admin
-
-**TODO: write important stuff...**
-
+- [Javascript events](#javascript-events)
+- [Debugging](#debugging)
 
 
 ### Creating ads programmatically
@@ -185,3 +177,7 @@ $(window)
 ```
 
 *These events are only triggered on fif ads, not composed js*
+
+### Debugging
+
+You can debug what's going on in front-end by setting the constant `ERWP_DEBUG` to true in wp-config.php. If you instead want to handle the debugging messages with your own function you can declare the function `window.erwpDebug`.
