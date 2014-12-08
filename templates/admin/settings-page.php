@@ -32,7 +32,7 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <input type="button" class="button-secondary" value="Ta Bort" onclick="EmediateAdmin.remove(jQuery(this).parent().parent())"/>
                             </td>
-                            <br/>
+
                         </tr>
                         <?php
                         $i++;
@@ -106,7 +106,7 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <input type="button" class="button-secondary" value="Ta Bort" onclick="EmediateAdmin.remove(jQuery(this).parent().parent())"/>
                             </td>
-                            <br/>
+                          
                         </tr>
                         <?php
                         $i++;
