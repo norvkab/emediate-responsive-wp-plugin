@@ -1,118 +1,92 @@
 var EmediateAdmin = new function(){
     this.addAd = function() {
-        var parent = document.createElement('tr');
-        var i = jQuery("#emediate_ads").children().length-1 ;
-        var j = jQuery("#emediate_breakpoints").children().length-1;
-
+        var parent = jQuery('<tr></tr>');
+        var i = jQuery("#emediate_ads tr").length;
+        var j = jQuery("#emediate_breakpoints tr").length;
 
         // Slug
 
-        var slug = document.createElement('input');
-        slug.type='text';
-        slug.name="emediate_options[ads]["+i+"][slug]";
-        slug.placeholder = "Slug";
+        var slug = jQuery('<input/>').attr('type','text').attr('name','emediate_options[ads]['+i+'][slug]').attr('placeholder','Slug');
 
         // Implementation
 
-        var implemention = document.createElement('select');
-        implemention.name="emediate_options[ads]["+i+"][implementation]";
+        var implemention = jQuery('<select></select>').attr('name','emediate_options[ads]['+i+'][implementation]');
         this.addOptions('FIF',implemention);
-        this.addOptions('Script',implemention);
+        this.addOptions('Composed',implemention);
 
         // Status
 
-        var status = document.createElement('select');
-        status.name="emediate_options[ads]["+i+"][status]";
+        var status = jQuery('<select></select>').attr('name','emediate_options[ads]['+i+'][status]');
         this.addOptions('Active',status);
         this.addOptions('Inactive',status);
 
         // Action
 
-        var action = document.createElement('select');
-        action.name="emediate_options[ads]["+i+"][action]";
+        var action = jQuery('<select></select>').attr('name','emediate_options[ads]['+i+'][action]');
         this.addOptions('Yes',action);
         this.addOptions('No',action);
 
         // Remove button
 
-        var remove_button = document.createElement('input');
-        remove_button.type='button';
-        remove_button.className = "button-secondary";
-        remove_button.onclick = function(){EmediateAdmin.remove(parent);};
-        remove_button.value='Ta Bort';
-
+        var remove_button = jQuery('<input/>').attr('type','button').addClass('button-secondary').attr('value', 'Ta Bort');
+        remove_button.onclick = function(){
+            EmediateAdmin.remove(parent);
+        };
 
         //Height
 
-        var height = document.createElement('input');
-        height.type='text';
-        height.name="emediate_options[ads]["+i+"][height]";
-        height.placeholder = "Height";
-        height.value = 0;
+        var height = jQuery('<input/>').attr('type','text').attr('name','emediate_options[ads]['+i+'][height]').attr('placeholder','Height').attr('value',0);
 
         // ADDING TO TABLE
 
-        parent.appendChild(document.createElement('td').appendChild(slug));
+        parent.append(jQuery('<td></td>').append(jQuery('<strong>Slug:</strong>')).append(slug));
 
         // CU
 
         for(var bp=0;bp<j;bp++){
-            var cu = document.createElement('input');
-            cu.type='text';
-            cu.name="emediate_options[ads]["+i+"][cu"+bp+"]";
-            cu.placeholder = "CU-"+bp;
-            parent.appendChild(document.createElement('td').appendChild(cu));
+            var cu = jQuery('<input/>').attr('type','text').attr('name','emediate_options[ads]['+i+'][cu'+bp+']').attr('placeholder','CU-'+bp);
+            parent.append(jQuery('<td></td>').append(jQuery('<strong>CU-'+bp+':</strong>')).append(cu));
         }
 
-        parent.appendChild(document.createElement('td').appendChild(implemention));
-        parent.appendChild(document.createElement('td').appendChild(status));
-        parent.appendChild(document.createElement('td').appendChild(action));
-        parent.appendChild(document.createElement('td').appendChild(height));
-        parent.appendChild(document.createElement('td').appendChild(remove_button));
-
+        parent.append(jQuery('<td></td>').append(jQuery('<strong>Implementation:</strong>')).append(implemention));
+        parent.append(jQuery('<td></td>').append(jQuery('<strong>Status:</strong>')).append(status));
+        parent.append(jQuery('<td></td>').append(jQuery('<strong>Action:</strong>')).append(action));
+        parent.append(jQuery('<td></td>').append(jQuery('<strong>Height:</strong>')).append(height));
+        parent.append(jQuery('<td></td>').append(remove_button));
 
         jQuery("#emediate_ads table").append(parent);
     };
 
     this.addBreakpoint = function(){
-        var parent = document.createElement('tr');
+        var parent = jQuery('<tr></tr>');
 
         // Min width
         var i = jQuery("#emediate_breakpoints table tbody").children().length;
-        var min = document.createElement('input');
-        min.type='text';
-        min.name="emediate_options[breakpoints]["+i+"][min_width]";
-        min.placeholder = "Min width";
+        var min = jQuery('<input/>').attr('type','text').attr('name','emediate_options[breakpoints]['+i+'][min_width]').attr('placeholder','Min width');
 
         // Max width
 
-        var max = document.createElement('input');
-        max.type='text';
-        max.name="emediate_options[breakpoints]["+i+"][max_width]";
-        max.placeholder = "Max width";
+        var max = jQuery('<input/>').attr('type','text').attr('name','emediate_options[breakpoints]['+i+'][max_width]').attr('placeholder','Max width');
 
         // Remove button
 
-        var remove_button = document.createElement('input');
-        remove_button.type='button';
-        remove_button.className = "button-secondary";
-        remove_button.onclick = function(){EmediateAdmin.remove(parent);};
-        remove_button.value='Ta Bort';
-        parent.appendChild(document.createElement('td').appendChild(min));
-        parent.appendChild(document.createElement('td').appendChild(max));
-        parent.appendChild(document.createElement('td').appendChild(remove_button));
+        var remove_button = jQuery('<input/>').attr('type','button').addClass('button-secondary').attr('value','Ta Bort');
+        remove_button.onclick = function(){
+            EmediateAdmin.remove(parent);
+        };
+
+        parent.append(jQuery('<td></td>').append(jQuery('<strong>Min-width:</strong>').append(min)));
+        parent.append(jQuery('<td></td>').append(jQuery('<strong>Max-width:</strong>')).append(max));
+        parent.append(jQuery('<td></td>').append(remove_button));
 
         jQuery("#emediate_breakpoints table").append(parent);
 
 
     };
 
-    this.addOptions = function(option, parent){
-
-        var opt = document.createElement('option');
-        opt.value = option;
-        opt.innerHTML = option;
-        parent.appendChild(opt);
+    this.addOptions = function(option, object){
+        var opt = jQuery('<option></option>').attr('value',option).text(option);
+        object.append(opt);
     };
 
     this.remove = function(parent){
