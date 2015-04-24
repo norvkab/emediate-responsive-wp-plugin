@@ -35,7 +35,7 @@ class ERWP_Plugin {
 
         // Add emediate and erwp javascript
         wp_enqueue_script('emediate-eas', '//'.self::$opts['default_js_host'].'/EAS_tag.1.0.js', array(), '1.0');
-        wp_enqueue_script('erwp-theme-js', ERWP_PLUGIN_URL.'/js/ERWP.js', array('jquery'), ERWP_PLUGIN_VERSION);
+        wp_enqueue_script('erwp-theme-js', plugins_url('emediate-responsive-wp-plugin/js/ERWP.js'), array('jquery'), ERWP_PLUGIN_VERSION);
 
 
         // Hook into all ad-actions

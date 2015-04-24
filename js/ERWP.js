@@ -50,7 +50,7 @@ var ERWP = (function($, window, erwpSettings) {
 
                 document.write(
                     '<script src="'+src+';'+erwpSettings.adQuery+'"></script>'+
-                    '<noscript><a target="_blank" href="'+clickURL+'">'+
+                    '<noscript><a target="_blank" data-test="click" href="'+clickURL+'">'+
                         '<img src="'+src+';cre=img" alt="emediate" /></a></noscript>'
                 );
 
@@ -327,9 +327,9 @@ var ERWP = (function($, window, erwpSettings) {
             hideAd : function($adElem) {
                 $adElem
                     .height(0)
+                    .hide()
                     .removeClass('has-ad')
-                    .attr('data-current-cu', '')
-                    .html('');
+                    .attr('data-current-cu', '');
 
                 $win.trigger('erwpAdHidden', [$adElem, this.breakPoint]);
             },
@@ -411,38 +411,6 @@ var ERWP = (function($, window, erwpSettings) {
                             }
                         });
                         return hasEmptyAdTag;
-                    },
-                    iframeScripts = fifWin.document.querySelectorAll("body script"),
-                    iframeElements = fifWin.document.querySelectorAll("body *"),
-                    containsAllScriptNodes = function () {
-                        // No comment but no other elements either, check if div-container has anything more than the iframe
-                        return iframeScripts.length === iframeElements.length;
-                    },
-                    containsOnlyEmptyImages = function() {
-                        var images = fifWin.document.querySelectorAll("body img");
-                        if( (images.length + iframeScripts.length) ==  iframeElements.length ) {
-                            var onlyEmptyImages = true;
-                            for(var i=0; i < images.length; i++) {
-                                if( images[i].height != 0 ) {
-                                    onlyEmptyImages = false;
-                                    break;
-                                }
-                            }
-                            return onlyEmptyImages;
-                        }
-                        return false;
-                    },
-                    containsOnlyHiddenElements = function() {
-                        if( (iframeElements.length - iframeScripts.length) == 1 ) {
-                            for(var i=0; i < iframeElements.length; i++) {
-                                if( iframeElements[i].nodeName != 'SCRIPT' && typeof iframeElements[i].getAttribute == 'function') {
-                                    if( iframeElements[i].offsetHeight == 0 ) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                        return false;
                     };
 
                 var status = {
@@ -452,12 +420,6 @@ var ERWP = (function($, window, erwpSettings) {
 
                 if( containsEmptyAdTag() ) {
                     status = {isEmpty: true, emptyReason: 'Contains empty-ad-tag: '+foundEmptyTag};
-                } else if( containsAllScriptNodes() ) {
-                    status = {isEmpty: true, emptyReason: 'Contains only script elements'};
-                } else if( containsOnlyEmptyImages() ) {
-                    status = {isEmpty: true, emptyReason: 'Contains only scripts and hidden images'};
-                } else if( containsOnlyHiddenElements() ) {
-                    status = {isEmpty: true, emptyReason: 'Contains only hidden elements'};
                 } else if( $win.trigger('erwpAdLoaded', [fifWin, $adElem, this.breakPoint]) === false ) {
                     status = {isEmpty: true, emptyReason: 'Turned hidden via js event'};
                 }
