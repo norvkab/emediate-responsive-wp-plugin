@@ -127,9 +127,10 @@ class ERWP_AdQueryParser {
 
                 $this->objects['post'] = $queried_obj;
                 $this->objects['page_type'] = $queried_obj->post_type;
-                $post_categories = wp_get_post_categories($queried_obj->ID);
+                $get_post_cats = function_exists('vkwp_get_post_categories') ? 'vkwp_get_post_categories' : 'wp_get_post_categories';
+                $post_categories = $get_post_cats($queried_obj->ID);
                 if( !empty($post_categories) && is_array($post_categories) ) {
-                    $current_category = get_category($post_categories[0]);
+                    $current_category = is_numeric($post_categories[0]) ? get_category($post_categories[0]) : $post_categories[0];
                 }
                 if( is_front_page() ) {
                     $this->objects['page_type'] = 'frontpage';

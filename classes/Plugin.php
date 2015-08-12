@@ -23,6 +23,9 @@ class ERWP_Plugin {
      * Should be called once before the page gets rendered
      */
     public static function themeInit() {
+        if( defined('ERWP_ENABLED') && ERWP_ENABLED === false )
+            return;
+
         // Load our options
         self::$opts = ERWP_Options::load();
         self::$ad_markup_creator = new ERWP_AdCreator(
@@ -70,7 +73,7 @@ class ERWP_Plugin {
                 'locationjQueryFilter' => self::$opts['location_jquery_filter'],
                 'debug' => ERWP_DEBUG,
                 'appLocationMethod' => apply_filters('emediate_app_location_method', ''),
-                'fifHtmlFile' => ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host']
+                'fifHtmlFile' => apply_filters('erwp_fif_url', ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host'])
             ));
 
         $script .= '; '.PHP_EOL.'/* ]]> */</script>';

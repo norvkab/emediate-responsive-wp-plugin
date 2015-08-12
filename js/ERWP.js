@@ -49,7 +49,7 @@ var ERWP = (function($, window, erwpSettings) {
                                 ( erwpSettings.adQuery ? ';'+erwpSettings.adQuery : '');
 
                 document.write(
-                    '<script src="'+src+';'+erwpSettings.adQuery+'"></script>'+
+                    '<script async="async" src="'+src+';'+erwpSettings.adQuery+'"></script>'+
                     '<noscript><a target="_blank" data-test="click" href="'+clickURL+'">'+
                         '<img src="'+src+';cre=img" alt="emediate" /></a></noscript>'
                 );
