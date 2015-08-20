@@ -49,7 +49,7 @@ var ERWP = (function($, window, erwpSettings) {
                                 ( erwpSettings.adQuery ? ';'+erwpSettings.adQuery : '');
 
                 document.write(
-                    '<script async="async" src="'+src+';'+erwpSettings.adQuery+'"></script>'+
+                    '<script src="'+src+';'+erwpSettings.adQuery+'"></script>'+
                     '<noscript><a target="_blank" data-test="click" href="'+clickURL+'">'+
                         '<img src="'+src+';cre=img" alt="emediate" /></a></noscript>'
                 );
@@ -251,6 +251,9 @@ var ERWP = (function($, window, erwpSettings) {
                     var iframe = window.EAS_create_iframe($elem.get(0), width, height, erwpSettings.fifHtmlFile);
                     iframe.EAS_src = src+";fif=y";
                     iframe.ERWP_fifIndex = $elem.attr('data-ad-index');
+
+                    // Make iframe element support trancparency
+                    $elem.find('iframe').attr('allowTransparency','true');
 
                     $win.trigger('erwpAdCreated', [src, $elem, cu, this.breakPoint]);
                     _debug('Creating fif for '+cu);

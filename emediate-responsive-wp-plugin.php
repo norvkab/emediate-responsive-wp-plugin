@@ -6,7 +6,7 @@ Version: 0.1.3
 Author: norvkab <https://github.com/norvkab/>
 */
 define('ERWP_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('ERWP_PLUGIN_VERSION', '0.1.10');
+define('ERWP_PLUGIN_VERSION', '0.1.21');
 define('ERWP_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
 defined('ERWP_DEBUG') or define('ERWP_DEBUG', false);
 
