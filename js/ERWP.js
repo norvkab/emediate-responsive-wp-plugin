@@ -178,7 +178,7 @@ var ERWP = (function($, window, erwpSettings) {
                             return;
                         }
                         if (!erwpSettings.coords) {
-                            $win.trigger('geolocation_found');
+                            $win.trigger('geolocation_found', loc);
                         }
                         erwpSettings.coords = loc.coords;
                         self.renderFifAd($elem, ';lat='+loc.latitude+';lon='+loc.longitude+';');
