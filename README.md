@@ -3,7 +3,16 @@ emediate-responsive-wp-plugin
 
 *Collaboration between Norran, VK and Aftonbladet.*
 
-### Admin page
+**Table of contents**
+
+- [Getting started](#getting-started)
+- [Creating ads programmatically](#Creating ads programmatically)
+- [Ad server requests](#Ad-server-requests)
+- [Geolocation](#geolocation)
+- [Javascript events](#Javascript-events)
+
+
+### Getting started
 
 This section of the documentation will go through how you setup the plugin using the settings page in wp-admin
 
@@ -27,7 +36,7 @@ $break_points = array();
 $js_host = 'ad1.emediate.dk';
 $cu_param_name = 'cu';
 $cu = 1283;
-$impl = 'fif'; // either 'js' or 'fif'
+$impl = ERWP_AdCreator::IMPL_FIF; // either ERWP_AdCreator::IMPL_FIF or ERWP_AdCreator::IMPL_COMPOSED
 $ad_height = 320;
 
 $ad_creator = new ERWP_AdCreator($break_points, $js_host, $cu_param_name);
@@ -49,6 +58,95 @@ add_action('wp_head', function() { ?>
         erwpSettings.adQuery += ';isHandheld=yes';
     </script>
 <?php });
+```
+
+### Geolocation
+
+By enabling the geolocating features of this plugin the coordinates of your visitors will be sent to the ad server. This makes it  possible to target ads only to be displayed when the visitor is residing at certain locations.
+Geolocation is possible both via browser API, or via a native app-wrapper.
+Options for native app-wrapper is disabled by default, and can be enabled by the
+following filters:
+
+```php
+// method to show emediate options for mobile app in admin
+add_filter('emediate_app_show_options', '__return_true');
+
+// javascript-method to return position from app
+add_filter('emediate_app_location_method', function() {
+    return 'window._nativeAppQueryLocation';
+});
+```
+
+Example of a javascript-implementation with asynchronous location function:
+```js
+
+var interval = null;
+var hasStartedGPS = false;
+var cachedCoords = null;
+
+var callbacks = [];
+
+// wait for gps lock, try to fetch multiple times
+var queryLocation = function(title, message, callback) {
+
+    var resetGPS = function() {
+        callbacks = []; // clear memory
+        if (interval) {
+            clearInterval(interval);
+            interval = false;
+        }
+        if (hasStartedGPS) {
+            nativeapp.stopGeoLocating();
+            hasStartedGPS = false;
+        }
+    };
+
+    if (cachedCoords) {
+        return callback(cachedCoords);
+    } else if (interval === false) {  // timeout
+        return resetGPS();
+    }
+
+    callbacks.push(callback);
+
+    if (interval === null) {
+
+        if (!hasStartedGPS) {
+            nativeapp.startGeoLocating(title, message);
+            hasStartedGPS = true;
+        }
+        interval = setInterval(function() {
+            try {
+                var coords = nativeapp.getGeoLocation();
+                coords = $.parseJSON(coords);
+            } catch (e) { return; }
+
+            if (coords && coords.latitude) {
+                cachedCoords = coords;
+                for (var i = 0; i < callbacks.length; i++) {
+                    callbacks[i](coords);
+                }
+
+                resetGPS();
+            }
+        }, 300);
+
+        setTimeout(function() {
+            resetGPS();
+        }, 5000);
+    }
+}
+
+window._nativeAppQueryLocation = queryLocation;
+```
+
+To override disable browser geolocation (e.g. on desktop site), use filter `emediatate_enable_browser_location`:
+```php
+// override option to always disable geolocation on desktop site
+add_filter('emediatate_enable_browser_location', function($enabled) {
+    if (WP_IS_MOBILE) return $enabled;
+    return false;
+});
 ```
 
 ### Javascript events

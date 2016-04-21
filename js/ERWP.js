@@ -3,6 +3,14 @@ var ERWP = (function($, window, erwpSettings) {
     'use strict';
 
     var $win = $(window),
+        _debug = function(message) {
+            if( typeof window.erwpDebug == 'function' ) {
+                window.erwpDebug('ERWP: '+message);
+            }
+            else if( erwpSettings.debug && window.console && window.console.log ) {
+                window.console.log('EWRP: '+message);
+            }
+        },
         ERWP = {
 
             /**
@@ -32,13 +40,29 @@ var ERWP = (function($, window, erwpSettings) {
              * @param {String} src
              * @param {String|Number} cu
              */
-            composed : function(src, cu) {
-                var clickURL = 'http://' + erwpSettings.defaultJSHost + '/eas?'+erwpSettings.cuParamName+'='+cu+';ty=ct';
-                document.write(
-                    '<script src="'+src+';'+erwpSettings.adQuery+'"></script>'+
-                    '<noscript><a target="_blank" href="'+clickURL+'">'+
+            composed : function(host, param_name, cu_json) {
+                var cu = JSON.parse(cu_json);
+                var breakpoint_cu = '';
+                var src = '';
+                // Find CU for current breakpoint.
+                for(var i = 0; i < erwpSettings.breakPoints.length;i++) {
+                    if (erwpSettings.breakPoints[i].min_width == this.breakPoint.min_width) {
+                        breakpoint_cu = cu[i];
+                    }
+                }
+                if (breakpoint_cu != '') {
+                    src = '//' + host + '/eas?' + param_name + '=' + breakpoint_cu + ';cre=mu;js=y;target=_blank;';
+                    var clickURL = 'http://' + erwpSettings.defaultJSHost + '/eas?'+erwpSettings.cuParamName+'='+breakpoint_cu+';ty=ct' +
+                        ( erwpSettings.adQuery ? ';'+erwpSettings.adQuery : '');
+
+                    document.write(
+                        '<script src="'+src+';'+erwpSettings.adQuery+'"></script>'+
+                        '<noscript><a target="_blank" data-test="click" href="'+clickURL+'">'+
                         '<img src="'+src+';cre=img" alt="emediate" /></a></noscript>'
-                );
+                    );
+                }
+
+                _debug('Creating composed ad for '+cu);
             },
 
             /**
@@ -47,23 +71,156 @@ var ERWP = (function($, window, erwpSettings) {
              * @param {Number} fifIndex
              */
             fif : function(fifIndex) {
-                var $elem = $('#emediate-fif-'+fifIndex);
+                var $elem = $('#emediate-fif-'+fifIndex),
+                    self = this,
+                    getLocation = null,
+                    browserEnabled = erwpSettings.enableLocationBrowser,
+                    ua = window.navigator.userAgent,
+                    timeout = 5000;
 
                 // Collect this ad element for later (when ad needs
                 // to be reloaded due to rotation change for example)
-                if( this.hasRegisteredBreakPoints ) {
-                    this.$fifAds[fifIndex] = $elem;
+                this.$fifAds[fifIndex] = $elem;
+
+                var normal_render = function() {
+                    timeout = null;
+                    self.renderFifAd($elem);
+                };
+
+                // normal browser api
+                if (ua.match(/android/i)) {
+                    browserEnabled = erwpSettings.enableLocationAndroid;
+                }
+                else if (ua.match(/iphone/i) || ua.match(/ipad/i) || ua.match(/ipod/i) || ua.match(/iOS/)) {
+                    browserEnabled = erwpSettings.enableLocationiOS;
                 }
 
-                // render ad
-                this.renderFifAd($elem);
+                var appLocationMethod = null;
+                // get method to fetch location from app wrapper (if possible)
+                // should return a function with arguments (questionTitle, questionMessage, callback)
+                // if set
+                try {
+                    if (!erwpSettings.appLocationMethod) {
+                        appLocationMethod = null;
+                    }
+                    else if ($.type(erwpSettings.appLocationMethod) == 'string') {
+                        appLocationMethod = eval(erwpSettings.appLocationMethod);
+                    }
+                    else if ($.isFunction(erwpSettings.appLocationMethod)) {
+                        appLocationMethod = erwpSettings.appLocationMethod;
+                    }
+                } catch (e) {
+                    if (window.console && window.console.log) window.console.log('Error getting app location method. Fallback to browser <mode></mode>. ' + e.toString());
+                }
+
+                // cached
+                if (erwpSettings.coords) {
+                    getLocation = function(callback) {
+                        callback(erwpSettings.coords);
+                    }
+                }
+                else if (appLocationMethod) {
+                    if (erwpSettings.enableLocationApp) {
+                        getLocation = function(callback) {
+                            appLocationMethod(erwpSettings.locationQueryTitle, erwpSettings.locationQueryText, callback);
+                        }
+                    }
+
+                }
+                else if (browserEnabled && navigator.geolocation) {
+
+                    getLocation = function(callback) {
+
+                        var opts = {
+                            enableHighAccuracy: true
+                        };
+
+                        var _success = function(p) {
+                            //for mozilla geode,it returns the coordinates slightly differently
+                            var params;
+                            if(typeof(p.latitude)===undefined) {
+                                params = {
+                                    timestamp: p.timestamp,
+                                    coords: {
+                                        latitude:  p.latitude,
+                                        longitude: p.longitude
+                                    }
+                                };
+                            } else {
+                                params = p;
+                            }
+
+                            if (timeout !== null) {
+                                callback(params.coords);
+                            } else {
+                                normal_render();
+                            }
+                        };
+
+                        var _error = function(e) {
+                            $win.trigger('geolocation_failed', e.code);
+                            normal_render();
+                        };
+
+                        navigator.geolocation.getCurrentPosition(_success, _error, opts);
+                    }
+
+                }
+
+                // Only query for jQuery element filter
+                if (erwpSettings.locationjQueryFilter) {
+                    try {
+                        if (!$elem.is(erwpSettings.locationjQueryFilter)) {
+                            getLocation = null;
+                        }
+                    } catch (e) {}
+                }
+
+                if (getLocation) {
+                    getLocation(function(loc) {
+                        if (timeout == null) return;
+                        timeout = null;
+
+                        if (!loc.latitude) {
+                            normal_render();
+                            return;
+                        }
+                        if (!erwpSettings.coords) {
+                            $win.trigger('geolocation_found');
+                        }
+                        erwpSettings.coords = loc.coords;
+                        self.renderFifAd($elem, ';lat='+loc.latitude+';lon='+loc.longitude+';');
+                    });
+
+                    setTimeout(function() {
+                        if (timeout !== null) {
+                            timeout = null;
+                            $win.trigger('geolocation_failed', -1);
+                            normal_render();
+                        }
+                    }, timeout);
+
+                }
+                else normal_render();
+            },
+
+            /**
+             * @returns {Number}
+             */
+            getNumFifAds : function() {
+                var num = 0;
+                $.each(this.$fifAds, function(i, obj) {
+                    num++;
+                });
+                return num;
             },
 
             /**
              * Inserts a fif-ad in given element
              * @param {jQuery} $elem
+             * @param {String} extraQuery
              */
-            renderFifAd : function($elem) {
+            renderFifAd : function($elem, extraQuery) {
                 var cu, src,
                     height = $elem.attr('data-height') || 0,
                     width = $elem.attr('data-width') || 0;
@@ -88,7 +245,13 @@ var ERWP = (function($, window, erwpSettings) {
                         .html('');
 
                     src = '//'+erwpSettings.defaultJSHost+'/eas?cre=mu;js=y;target=_blank;'+erwpSettings.cuParamName+'='+cu+
-                        ';'+erwpSettings.adQuery;
+                        ';'+erwpSettings.adQuery+(extraQuery || '');
+
+                    // sanitize url
+                    src = src.replace(/;;/g, ';');
+                    if( src.substr(-1) == ';' ) {
+                        src = src.substr(0, src.length - 1);
+                    }
 
                     // Load fif
                     // window.EAS_load_fif('emediate-fif-'+$elem.attr('data-index'), erwpSettings.fifHtmlFile, src, width, height);
@@ -98,6 +261,7 @@ var ERWP = (function($, window, erwpSettings) {
                     iframe.ERWP_fifIndex = $elem.attr('data-ad-index');
 
                     $win.trigger('erwpAdCreated', [src, $elem, cu, this.breakPoint]);
+                    _debug('Creating fif for '+cu);
                 }
             },
 
@@ -121,8 +285,18 @@ var ERWP = (function($, window, erwpSettings) {
              * Iterate through all fif-ad elements and re-insert fif-ad
              */
             reloadFiFAds : function() {
+                var extraArgs = '';
+
+                // add location params if cached
+                if (erwpSettings.coords && erwpSettings.coords.latitude) {
+                    var loc = erwpSettings.coords;
+                    extraArgs = ';lat='+loc.latitude+';lon='+loc.longitude+';';
+                }
+
+                _debug('Reloading fif ads');
+
                 $.each(this.$fifAds, function(i, $adElem) {
-                    ERWP.renderFifAd($adElem);
+                    ERWP.renderFifAd($adElem, extraArgs);
                 });
             },
 
@@ -133,11 +307,24 @@ var ERWP = (function($, window, erwpSettings) {
              * @param {Window} iframeWin
              */
             fifLoaded : function(iframeWin) {
-                var $adElem = this.getAdElementFromFifIframe(iframeWin);
-                if( this.shouldHideFif(iframeWin, $adElem) ) {
+                var $adElem = this.getAdElementFromFifIframe(iframeWin),
+                    adInspect = this.inspectFif(iframeWin, $adElem);
+
+                if( adInspect.isEmpty ) {
+                    _debug('Making ad '+$adElem.attr('id')+' hidden, cause: '+adInspect.emptyReason);
                     this.hideAd($adElem);
                 } else {
                     $adElem.addClass('has-ad');
+                    this.resizeIframeToDocumentSize($adElem);
+
+                    var count = 0,
+                        _this = this,
+                        interval = setInterval(function() {
+                            _this.resizeIframeToDocumentSize($adElem);
+                            count += 1;
+                            if (count > 4)
+                                clearInterval(interval);
+                        }, 500);
                 }
             },
 
@@ -148,9 +335,9 @@ var ERWP = (function($, window, erwpSettings) {
             hideAd : function($adElem) {
                 $adElem
                     .height(0)
+                    .hide()
                     .removeClass('has-ad')
-                    .attr('data-current-cu', '')
-                    .html('');
+                    .attr('data-current-cu', '');
 
                 $win.trigger('erwpAdHidden', [$adElem, this.breakPoint]);
             },
@@ -168,37 +355,84 @@ var ERWP = (function($, window, erwpSettings) {
             },
 
             /**
-             * @param fifWin
-             * @returns {Boolean}
+             * @param {jQuery} $adElem
+             * @return {Boolean}
              */
-            shouldHideFif : function (fifWin, $adElem) {
-                var containsEmptyAdTag = function () {
-                        if ( !fifWin.body )
+            resizeIframeToDocumentSize : function($adElem) {
+                var $iframe = $adElem.find('iframe'),
+                    $iframeBody = $iframe.contents().find('body'),
+                    iframeHeight = $iframe.attr('data-current-height') || $iframe.height(),
+                    iframeWidth = $iframe.attr('data-current-width') || $iframe.width(),
+                    iframeDocHeight = $iframeBody.outerHeight(),
+                    iframeDocWidth = $iframeBody.outerWidth(),
+                    updateSize = function(newSize, oldSize, sizeFunc) {
+                        if(  newSize != oldSize ) {
+                            _debug('Resizing ad '+$adElem.attr('id')+' '+sizeFunc+', from '+oldSize+' to '+newSize);
+                            $iframe[sizeFunc](iframeDocHeight).attr('data-current-'+sizeFunc, iframeDocHeight);
+                            $adElem[sizeFunc](iframeDocHeight);
+                            return true;
+                        }
+                        return false;
+                    },
+                    gotNewHeight = updateSize(iframeDocHeight, iframeHeight, 'height'),
+                    gotNewWidth = updateSize(iframeDocWidth, iframeWidth, 'width');
+
+                return gotNewHeight || gotNewWidth;
+            },
+
+            /**
+             * @example
+             *
+             *  var fifWindow = $('#fif-1 iframe').contents();
+             *  inspection = ERWP.inspectFif(fifWindow, ERWP.getAdElementFromFifIframe(fifWindow);)
+             *
+             *  inspection =  {
+             *   isEmpty : bool,
+             *   emptyReason : '...'
+             *  }
+             *
+             * @param {Object} fifWin
+             * @param {jQuery} $adElem
+             * @returns {Object}
+             */
+            inspectFif : function (fifWin, $adElem) {
+
+                // @todo: what about ie7 ?
+
+                var foundEmptyTag = null,
+                    containsEmptyAdTag = function () {
+                        var body = fifWin.body || fifWin.document.body;
+                        if ( !body )
                             return false;
 
                         var hasEmptyAdTag = false,
                             emptyAdTags = (erwpSettings.emptyAdTags || '').split('\n');
 
-                        emptyAdTags.push('<!-- No matching campaign -->');
+                        emptyAdTags.push('<!-- No matching campaign -->'); // emediates own no-ad-tag
 
                         $.each(emptyAdTags, function(i, tag) {
                             var emptyAdTag = $.trim(tag);
-                            if( emptyAdTag && fifWin.body.innerHTML.indexOf(emptyAdTag) > -1 ) {
+                            if( emptyAdTag && body.innerHTML.indexOf(emptyAdTag) > -1 ) {
+                                foundEmptyTag = emptyAdTag;
                                 hasEmptyAdTag = true;
                                 return false;
                             }
                         });
-
                         return hasEmptyAdTag;
-                    },
-                    containsAllScriptNodes = function () {
-                        // No comment but no other elements either, check if div-container has anything more than the iframe
-                        return fifWin.document.querySelectorAll("body script").length === fifWin.document.querySelectorAll("body *").length;
                     };
 
-                return containsEmptyAdTag() ||
-                        containsAllScriptNodes() ||
-                        $win.trigger('erwpAdLoaded', [fifWin, $adElem, this.breakPoint]) === false;
+                var status = {
+                    isEmpty : false,
+                    emptyReason : ''
+                };
+
+                if( containsEmptyAdTag() ) {
+                    status = {isEmpty: true, emptyReason: 'Contains empty-ad-tag: '+foundEmptyTag};
+                } else if( $win.trigger('erwpAdLoaded', [fifWin, $adElem, this.breakPoint]) === false ) {
+                    status = {isEmpty: true, emptyReason: 'Turned hidden via js event'};
+                }
+
+                return status;
             }
         };
 
