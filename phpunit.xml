@@ -1,0 +1,16 @@
+<phpunit bootstrap="classes/test/setup.php"
+         backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false">
+    <testsuites>
+        <testsuite name="Source">
+            <directory suffix=".php">classes/test/</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

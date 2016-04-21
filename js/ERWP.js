@@ -186,7 +186,7 @@ var ERWP = (function($, window, erwpSettings) {
                             return;
                         }
                         if (!erwpSettings.coords) {
-                            $win.trigger('geolocation_found');
+                            $win.trigger('geolocation_found', loc);
                         }
                         erwpSettings.coords = loc.coords;
                         self.renderFifAd($elem, ';lat='+loc.latitude+';lon='+loc.longitude+';');
@@ -259,6 +259,9 @@ var ERWP = (function($, window, erwpSettings) {
                     var iframe = window.EAS_create_iframe($elem.get(0), width, height, erwpSettings.fifHtmlFile);
                     iframe.EAS_src = src+";fif=y";
                     iframe.ERWP_fifIndex = $elem.attr('data-ad-index');
+
+                    // Make iframe element support trancparency
+                    $elem.find('iframe').attr('allowTransparency','true');
 
                     $win.trigger('erwpAdCreated', [src, $elem, cu, this.breakPoint]);
                     _debug('Creating fif for '+cu);
