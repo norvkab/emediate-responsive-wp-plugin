@@ -70,19 +70,12 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <strong>Implementation: </strong>
                                 <select type="text" name="emediate_options[ads][<?php echo $i ?>][implementation]" ?>">
-<<<<<<< HEAD
                                     <option <?php if($opts['implementation'] == ERWP_AdCreator::IMPL_FIF) echo 'selected = selected'; ?> value="<?php echo ERWP_AdCreator::IMPL_FIF ?>">
                                         FIF
                                     </option>
                                     <option <?php if($opts['implementation'] == ERWP_AdCreator::IMPL_COMPOSED) echo 'selected = selected'; ?> value="<?php echo ERWP_AdCreator::IMPL_COMPOSED ?>">
                                         Composed
-=======
-                                    <option <?php if($opts['implementation'] == 'fif') echo 'selected = selected'; ?> value="fif">
-                                        FIF
-                                    </option>
-                                    <option <?php if($opts['implementation'] == 'js') echo 'selected = selected'; ?> value="js">
-                                        JS
->>>>>>> master
+
                                     </option>
                                 </select>
                             </td>
