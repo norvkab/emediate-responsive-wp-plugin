@@ -2,11 +2,11 @@
 /*
 Plugin Name: Emediate Responsive Wordpress Plugin
 Description: Integrates the website with Emediate ad manager
-Version: 0.1.3
+Version: 0.1.4
 Author: norvkab <https://github.com/norvkab/>
 */
 define('ERWP_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('ERWP_PLUGIN_VERSION', '0.1.21');
+define('ERWP_PLUGIN_VERSION', '0.1.22');
 define('ERWP_PLUGIN_PATH', plugin_dir_path( __FILE__ ));
 defined('ERWP_DEBUG') or define('ERWP_DEBUG', false);
 

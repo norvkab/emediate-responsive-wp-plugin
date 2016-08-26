@@ -40,19 +40,27 @@ var ERWP = (function($, window, erwpSettings) {
              * @param {String} src
              * @param {String|Number} cu
              */
-            composed : function(src, cu) {
-                if( !cu ) {
-                    cu = (src.split(erwpSettings.cuParamName+'=')[1] || '').split(';')[0];
+            composed : function(host, param_name, cu_json) {
+                var cu = JSON.parse(cu_json);
+                var breakpoint_cu = '';
+                var src = '';
+                // Find CU for current breakpoint.
+                for(var i = 0; i < erwpSettings.breakPoints.length;i++) {
+                    if (erwpSettings.breakPoints[i].min_width == this.breakPoint.min_width) {
+                        breakpoint_cu = cu[i];
+                    }
                 }
+                if (breakpoint_cu != '') {
+                    src = '//' + host + '/eas?' + param_name + '=' + breakpoint_cu + ';cre=mu;js=y;target=_blank;';
+                    var clickURL = 'http://' + erwpSettings.defaultJSHost + '/eas?'+erwpSettings.cuParamName+'='+breakpoint_cu+';ty=ct' +
+                        ( erwpSettings.adQuery ? ';'+erwpSettings.adQuery : '');
 
-                var clickURL = 'http://' + erwpSettings.defaultJSHost + '/eas?'+erwpSettings.cuParamName+'='+cu+';ty=ct' +
-                                ( erwpSettings.adQuery ? ';'+erwpSettings.adQuery : '');
-
-                document.write(
-                    '<script src="'+src+';'+erwpSettings.adQuery+'"></script>'+
-                    '<noscript><a target="_blank" data-test="click" href="'+clickURL+'">'+
+                    document.write(
+                        '<script src="'+src+';'+erwpSettings.adQuery+'"></script>'+
+                        '<noscript><a target="_blank" data-test="click" href="'+clickURL+'">'+
                         '<img src="'+src+';cre=img" alt="emediate" /></a></noscript>'
-                );
+                    );
+                }
 
                 _debug('Creating composed ad for '+cu);
             },
@@ -361,7 +369,7 @@ var ERWP = (function($, window, erwpSettings) {
                     iframeDocHeight = $iframeBody.outerHeight(),
                     iframeDocWidth = $iframeBody.outerWidth(),
                     updateSize = function(newSize, oldSize, sizeFunc) {
-                        if( newSize != oldSize ) {
+                        if(  newSize != oldSize ) {
                             _debug('Resizing ad '+$adElem.attr('id')+' '+sizeFunc+', from '+oldSize+' to '+newSize);
                             $iframe[sizeFunc](iframeDocHeight).attr('data-current-'+sizeFunc, iframeDocHeight);
                             $adElem[sizeFunc](iframeDocHeight);

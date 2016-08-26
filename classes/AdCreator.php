@@ -57,6 +57,7 @@ class ERWP_AdCreator {
             if( $impl == 'js' && WP_DEBUG ) {
                 trigger_error('ERWP_AdCreator::create does not accept js as argument, use composed or fif', E_USER_DEPRECATED);
             }
+
             return $this->createComposedJSAd( current($cu_nums) );
         } else {
             return $this->createFifAd($cu_nums, $height);
@@ -68,8 +69,7 @@ class ERWP_AdCreator {
      * @return string
      */
     private function createComposedJSAd($cu){
-        $src = sprintf('//%s/eas?%s=%s;cre=mu;js=y;target=_blank;', $this->default_js_host, $this->cu_param_name, trim($cu));
-        return "<script>ERWP.composed('" . $src . "')</script>\n";
+        return "<script>ERWP.composed('" . $this->default_js_host . "','". $this->cu_param_name . "','". json_encode($cu) . "')</script>\n";
     }
 
     /**
