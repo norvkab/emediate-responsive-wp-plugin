@@ -34,33 +34,31 @@ var ERWP = (function($, window, erwpSettings) {
              */
             hasRegisteredBreakPoints : $.isArray(erwpSettings.breakPoints) && erwpSettings.breakPoints.length,
 
+            /**
+             * Scroll events for lazy loading.
+             *
+             * @var {Array}
+             */
+            scrollEvents : ['scroll', 'touchmove'],
 
             /**
              * Prints out an emediate ad using composed javascript
              * @param {String} src
              * @param {String|Number} cu
              */
-            composed : function(host, param_name, cu_json) {
-                var cu = JSON.parse(cu_json);
-                var breakpoint_cu = '';
-                var src = '';
-                // Find CU for current breakpoint.
-                for(var i = 0; i < erwpSettings.breakPoints.length;i++) {
-                    if (erwpSettings.breakPoints[i].min_width == this.breakPoint.min_width) {
-                        breakpoint_cu = cu[i];
-                    }
+            composed : function(src, cu) {
+                if( !cu ) {
+                    cu = (src.split(erwpSettings.cuParamName+'=')[1] || '').split(';')[0];
                 }
-                if (breakpoint_cu != '') {
-                    src = '//' + host + '/eas?' + param_name + '=' + breakpoint_cu + ';cre=mu;js=y;target=_blank;';
-                    var clickURL = 'http://' + erwpSettings.defaultJSHost + '/eas?'+erwpSettings.cuParamName+'='+breakpoint_cu+';ty=ct' +
-                        ( erwpSettings.adQuery ? ';'+erwpSettings.adQuery : '');
 
-                    document.write(
-                        '<script src="'+src+';'+erwpSettings.adQuery+'"></script>'+
-                        '<noscript><a target="_blank" data-test="click" href="'+clickURL+'">'+
+                var clickURL = 'http://' + erwpSettings.defaultJSHost + '/eas?'+erwpSettings.cuParamName+'='+cu+';ty=ct' +
+                                ( erwpSettings.adQuery ? ';'+erwpSettings.adQuery : '');
+
+                document.write(
+                    '<script src="'+src+';'+erwpSettings.adQuery+'"></script>'+
+                    '<noscript><a target="_blank" data-test="click" href="'+clickURL+'">'+
                         '<img src="'+src+';cre=img" alt="emediate" /></a></noscript>'
-                    );
-                }
+                );
 
                 _debug('Creating composed ad for '+cu);
             },
@@ -84,7 +82,12 @@ var ERWP = (function($, window, erwpSettings) {
 
                 var normal_render = function() {
                     timeout = null;
-                    self.renderFifAd($elem);
+                    if (erwpSettings.useLazyLoad && fifIndex >= erwpSettings.lazyLoadStart) {
+                        // Bind lazy load
+                        $win.on(self.getNamespacedEvents(fifIndex), {i : fifIndex, el : $elem}, self.lazyLoad);
+                    } else {
+                        self.renderFifAd($elem);
+                    }
                 };
 
                 // normal browser api
@@ -205,6 +208,35 @@ var ERWP = (function($, window, erwpSettings) {
             },
 
             /**
+             * Get namespaced scroll events, for unbinding purposes after ad has loaded.
+             *
+             * @param {Number} index
+             */
+            getNamespacedEvents : function(index) {
+                var namespace = '.ERWP_'+index;
+                return (this.scrollEvents.join(namespace+' ')+namespace);
+            },
+
+            /**
+             * Checks whether to lazy load the current ad or not.
+             *
+             * @param {Object} event Contains $elem and fifIndex.
+             */
+            lazyLoad : function(event) {
+                var $elem = event.data.el,
+                    fifIndex = event.data.i;
+
+                //load ads that are close by, either above or below. Don't load ads that are waaay above, for instance when the user uses the back button (to a previously scrolled page) or ctrl+end
+                if ( $win.scrollTop() >= ($elem.offset().top - $win.height() - erwpSettings.lazyLoadOffset)
+                    && $win.scrollTop() - ($elem.offset().top + $elem.height()) < erwpSettings.lazyLoadOffset
+                    ) {
+                    _debug('Lazy loading ad: ' + fifIndex);
+                    ERWP.renderFifAd($elem);
+                    $win.off(ERWP.getNamespacedEvents(fifIndex));
+                }
+            },
+
+            /**
              * @returns {Number}
              */
             getNumFifAds : function() {
@@ -313,6 +345,17 @@ var ERWP = (function($, window, erwpSettings) {
                 var $adElem = this.getAdElementFromFifIframe(iframeWin),
                     adInspect = this.inspectFif(iframeWin, $adElem);
 
+                // Don't resize/collapse ads with index defined in erwpSettings.adsToNotResize
+                if (erwpSettings.adsToNotResize) {
+                    var index = parseInt($adElem.attr('data-ad-index'), 10);
+                    if (erwpSettings.adsToNotResize.indexOf(index) !== -1) {
+                        // Probably safe to add class even if we don't know if we get an ad or not.
+                        $adElem.addClass('has-ad');
+                        _debug('Skipping resizing of ad ' + index);
+                        return;
+                    }
+                }
+
                 if( adInspect.isEmpty ) {
                     _debug('Making ad '+$adElem.attr('id')+' hidden, cause: '+adInspect.emptyReason);
                     this.hideAd($adElem);
@@ -369,7 +412,7 @@ var ERWP = (function($, window, erwpSettings) {
                     iframeDocHeight = $iframeBody.outerHeight(),
                     iframeDocWidth = $iframeBody.outerWidth(),
                     updateSize = function(newSize, oldSize, sizeFunc) {
-                        if(  newSize != oldSize ) {
+                        if( newSize != oldSize ) {
                             _debug('Resizing ad '+$adElem.attr('id')+' '+sizeFunc+', from '+oldSize+' to '+newSize);
                             $iframe[sizeFunc](iframeDocHeight).attr('data-current-'+sizeFunc, iframeDocHeight);
                             $adElem[sizeFunc](iframeDocHeight);
@@ -378,7 +421,7 @@ var ERWP = (function($, window, erwpSettings) {
                         return false;
                     },
                     gotNewHeight = updateSize(iframeDocHeight, iframeHeight, 'height'),
-                    gotNewWidth = updateSize(iframeDocWidth, iframeWidth, 'width');
+                    gotNewWidth = erwpSettings.resizeAdWidth ? updateSize(iframeDocWidth, iframeWidth, 'width') : false;
 
                 return gotNewHeight || gotNewWidth;
             },

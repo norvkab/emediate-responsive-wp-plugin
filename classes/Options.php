@@ -29,6 +29,9 @@ class ERWP_Options {
             'location_query_text' => '',
             'location_jquery_filter' => '',
             'show_app_options' => apply_filters('emediate_app_show_options', false),
+            'use_lazy_load' => false,
+            'lazy_load_offset' => 0,
+            'lazy_load_start' => 0
         );
         $default_opts = apply_filters(self::OPT_NAME, $default_opts);
         $options = self::mergeInDbOptions($default_opts, false);

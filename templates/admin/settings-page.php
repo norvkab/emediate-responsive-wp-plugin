@@ -32,7 +32,7 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <input type="button" class="button-secondary" value="Ta Bort" onclick="EmediateAdmin.remove(jQuery(this).parent().parent())"/>
                             </td>
-
+                            <br/>
                         </tr>
                         <?php
                         $i++;
@@ -70,12 +70,11 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <strong>Implementation: </strong>
                                 <select type="text" name="emediate_options[ads][<?php echo $i ?>][implementation]" ?>">
-                                    <option <?php if($opts['implementation'] == ERWP_AdCreator::IMPL_FIF) echo 'selected = selected'; ?> value="<?php echo ERWP_AdCreator::IMPL_FIF ?>">
+                                    <option <?php if($opts['implementation'] == 'fif') echo 'selected = selected'; ?> value="fif">
                                         FIF
                                     </option>
-                                    <option <?php if($opts['implementation'] == ERWP_AdCreator::IMPL_COMPOSED) echo 'selected = selected'; ?> value="<?php echo ERWP_AdCreator::IMPL_COMPOSED ?>">
-                                        Composed
-
+                                    <option <?php if($opts['implementation'] == 'js') echo 'selected = selected'; ?> value="js">
+                                        JS
                                     </option>
                                 </select>
                             </td>
@@ -107,7 +106,7 @@ if(!empty($_POST['emediate_options'])){
                             <td>
                                 <input type="button" class="button-secondary" value="Ta Bort" onclick="EmediateAdmin.remove(jQuery(this).parent().parent())"/>
                             </td>
-                          
+                            <br/>
                         </tr>
                         <?php
                         $i++;
@@ -223,6 +222,34 @@ if(!empty($_POST['emediate_options'])){
                 </td>
                 <td>
                     <textarea onchange="try { jQuery(window).is($(this).value()) } catch (e) { alert('Invalid query!') } ?>" type="text" name="emediate_options[location_jquery_filter]" ><?php echo $emediate_opts['location_jquery_filter']?></textarea>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <strong>Use lazy load:</strong>
+                </td>
+                <td>
+                    <select name="emediate_options[use_lazy_load]">
+                        <option value="0">No</option>
+                        <option value="1" <?php if ($emediate_opts['use_lazy_load']) echo 'selected="selected"'; ?>>Yes</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Number of pixels before ads comes into view to begin lazy loading them:</strong>
+                </td>
+                <td>
+                    <input type="number" name="emediate_options[lazy_load_offset]" value="<?php echo $emediate_opts['lazy_load_offset'] ?>" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong>Ad index to start lazy load from:</strong>
+                </td>
+                <td>
+                    <input type="number" name="emediate_options[lazy_load_start]" value="<?php echo $emediate_opts['lazy_load_start'] ?>" />
                 </td>
             </tr>
 

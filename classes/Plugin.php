@@ -73,7 +73,12 @@ class ERWP_Plugin {
                 'locationjQueryFilter' => self::$opts['location_jquery_filter'],
                 'debug' => ERWP_DEBUG,
                 'appLocationMethod' => apply_filters('emediate_app_location_method', ''),
-                'fifHtmlFile' => apply_filters('erwp_fif_url', ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host'])
+                'fifHtmlFile' => apply_filters('erwp_fif_url', ERWP_PLUGIN_URL.'js/EAS_fif.html#eas-host='.self::$opts['default_js_host']),
+                'adsToNotResize' => array(),
+                'resizeAdWidth' => (bool)apply_filters('emediate_resize_ad_width', true),
+                'useLazyLoad' => self::$opts['use_lazy_load'],
+                'lazyLoadOffset' => self::$opts['lazy_load_offset'],
+                'lazyLoadStart' => self::$opts['lazy_load_start']
             ));
 
         $script .= '; '.PHP_EOL.'/* ]]> */</script>';
